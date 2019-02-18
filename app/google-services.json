@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "371776517266",
+    "firebase_url": "https://easy-tracker-project.firebaseio.com",
+    "project_id": "easy-tracker-project",
+    "storage_bucket": "easy-tracker-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:371776517266:android:b84a167d9b43b272",
+        "android_client_info": {
+          "package_name": "com.example.android.plannertracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "371776517266-p1969j564ogce8r17n77aelsb3m8lfgj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.android.plannertracker",
+            "certificate_hash": "0ba7b544ee3664bd3d46bcee9cca29b1ebbda0af"
+          }
+        },
+        {
+          "client_id": "371776517266-ebjqveqqk3b02g47jah7esmntu3f7e3b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpM13LJTiHuvLGEnsE5-yrkSVa93gT8TM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "371776517266-ebjqveqqk3b02g47jah7esmntu3f7e3b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.android.plannertracker">
+
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <application
+        android:name=".DatabasePersistence.EasyTracker"
+        android:allowBackup="true"
+        android:icon="@drawable/map"
+        android:label="@string/app_name"
+        android:roundIcon="@drawable/travel"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".NewPlan" />
+
+        <service
+            android:name=".ChatHeadService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main2"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".TripDetails.EditActtivity" />
+        <activity
+            android:name=".TripDetails.DetailActivity"
+            android:theme="@style/Theme.AppCompat.Dialog"
+            android:label="@string/tripDetails"/>
+
+        <receiver android:name=".BroadCastRecievers.NotificationReciever" />
+        <receiver android:name=".BroadCastRecievers.AlarmReciever" />
+
+        <activity
+            android:name=".BroadCastRecievers.AlarmDialog"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
+        <activity
+            android:name=".TripDetails.AddNote"
+            android:theme="@style/Theme.AppCompat.Dialog"
+            android:label="@string/addNote" />
+    </application>
+
+</manifest>
