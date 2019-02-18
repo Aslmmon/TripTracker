@@ -27,7 +27,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    public static final String TRIP_DATA = "Trip Data";
+    public static final String TRIP_DATAA = "Trip Data";
 
 
     DatabaseReference databaseReference;
