@@ -48,7 +48,7 @@ public class NewPlan extends AppCompatActivity {
     EditText startPosition, endPosition, tripName;
     DatabaseReference databaseReference;
     Button dateBtn, timeBtn, save;
-    TextView dateText, timeText;
+    TextView dateText , timeText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
