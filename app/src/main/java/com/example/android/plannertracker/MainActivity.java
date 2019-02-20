@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.example.android.plannertracker.TripDetails.ArrayAdapter;
+import com.example.android.plannertracker.TripDetails.NoteClass;
 import com.example.android.plannertracker.TripDetails.TrackerInformation;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,36 +26,44 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    public static final String TRIP_DATAA = "Trip Data";
+    public static final String TRIP_DATA = "Trip Data";
+    String id;
 
 
-    DatabaseReference databaseReference;
+    DatabaseReference databaseReference, dataBaseNote;
     RecyclerView recyclerView;
+    TrackerInformation trackerInformation;
+    NoteClass noteClass;
     ArrayList<TrackerInformation> trackerInformationList;
+    boolean flagRound;
+    List<String> notesList;
 
     @Override
     protected void onStart() {
         super.onStart();
+        dataBaseNote = FirebaseDatabase.getInstance().getReference("Trip Data");
         databaseReference = FirebaseDatabase.getInstance().getReference("Trip Data");
+        //dataBaseNote.keepSynced(true);
         databaseReference.keepSynced(true);
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 trackerInformationList.clear();
-                for (DataSnapshot trackInfo: dataSnapshot.getChildren()){
+                for (DataSnapshot trackInfo : dataSnapshot.getChildren()) {
                     TrackerInformation values = trackInfo.getValue(TrackerInformation.class);
-                    TrackerInformation trackerInformation = new TrackerInformation();
+                    trackerInformation = new TrackerInformation();
                     String nameOfTrip = values.getTripName();
                     String start = values.getStartPosition();
                     String end = values.getDestination();
                     String date = values.getDate();
                     String time = values.getTime();
-                    String notes = values.getNote();
                     String tripType = values.getTripType();
-                    String id = values.getId();
+                //    String notes = values.getTripNotes().getMyNotes();
+                    id = values.getId();
                     trackerInformation.setTripName(nameOfTrip);
                     trackerInformation.setStartPosition(start);
                     trackerInformation.setDestination(end);
@@ -61,12 +71,42 @@ public class MainActivity extends AppCompatActivity
                     trackerInformation.setTime(time);
                     trackerInformation.setId(id);
                     trackerInformation.setTripType(tripType);
-                    trackerInformation.setNote(notes);
+
+                    dataBaseNote.child(id).child("note").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot noteSnapshot : dataSnapshot.getChildren()) {
+                                NoteClass noteValues = noteSnapshot.getValue(NoteClass.class);
+                                noteClass = new NoteClass();
+                                String noteAdded = noteValues.getMyNotes();
+                                String id = noteValues.getId();
+                                noteClass.setId(id);
+                                noteClass.setMyNotes(noteAdded);
+                                Log.i("trace", noteAdded);
+                                Log.i("trace", id);
+                                trackerInformation.setTripNotes(noteClass);
+                                trackerInformationList.add(trackerInformation);
+//                                String notes = noteSnapshot.getKey();
+//                                Log.i("trace", (noteSnapshot.getKey()));
+//                                Log.i("trace", notes);
+//                                Log.i("trace", ""+noteSnapshot.getValue());
+//       //                         String notesValue = noteSnapshot.getValue();
+//                                notesList.add(notes);
+//                                trackerInformation.setTripNotes(notesList);
+//                                trackerInformationList.add(trackerInformation);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
                     trackerInformationList.add(trackerInformation);
 
                 }
                 recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                recyclerView.setAdapter(new ArrayAdapter(MainActivity.this,trackerInformationList));
+                recyclerView.setAdapter(new ArrayAdapter(MainActivity.this, trackerInformationList));
             }
 
             @Override
@@ -74,6 +114,7 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+
     }
 
     @Override
@@ -81,20 +122,21 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
         intialize();
-        Toolbar toolbar =  findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         androidStaff(toolbar);
 
-        FloatingActionButton fab =  findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this,NewPlan.class));
+                startActivity(new Intent(MainActivity.this, NewPlan.class));
             }
         });
     }
 
     private void intialize() {
+        notesList = new ArrayList<>();
         recyclerView = findViewById(R.id.recycler);
         trackerInformationList = new ArrayList<>();
     }

@@ -23,12 +23,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder> {
     public static final String CLICKED_ITEM_POSITION = "ClickedItemPoisiton";
 
+
     private Context context;
     private ArrayList<TrackerInformation> trackerInformations;
+    private List<String> notes;
+    NoteClass noteClass;
     TrackerInformation trackerInformation;
     DatabaseReference databaseReference;
 
@@ -43,11 +47,12 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
         View view = LayoutInflater.from(parent.getContext()).
                 inflate(R.layout.my_list_home, parent, false);
 
+
         return new MyViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
         trackerInformation = trackerInformations.get(position);
         holder.trip.setText(trackerInformation.getTripName());
         holder.buttonView.setOnClickListener(new View.OnClickListener() {
@@ -59,6 +64,16 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+            }
+        });
+
+        holder.checkBoxFinishedNotes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    Toast.makeText(context, "Remove Note", Toast.LENGTH_SHORT).show();
+                }
 
             }
         });
@@ -164,15 +179,16 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
     }
 
 
+
     @Override
     public int getItemCount() {
         return trackerInformations.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView start, end, date, time, buttonView, trip;
+        TextView start, end, date, time, buttonView, trip,noteTaken;
         LinearLayout myLayout;
-        CheckBox checkBox;
+        CheckBox checkBox,checkBoxFinishedNotes;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -180,6 +196,8 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
             buttonView = itemView.findViewById(R.id.textViewOptions);
             myLayout = itemView.findViewById(R.id.Linear);
             checkBox = itemView.findViewById(R.id.checkFinished);
+            noteTaken = itemView.findViewById(R.id.tripHomeNotes);
+            checkBoxFinishedNotes = itemView.findViewById(R.id.checkFinishedNotes);
         }
     }
 }

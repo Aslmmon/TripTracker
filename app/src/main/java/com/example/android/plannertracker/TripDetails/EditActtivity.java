@@ -93,7 +93,7 @@ public class EditActtivity extends AppCompatActivity {
                 !TextUtils.isEmpty(time) && !TextUtils.isEmpty(theTripName)
                 && !TextUtils.isEmpty(TripType)) {
             TrackerInformation trackerInformation = new TrackerInformation(ID, start,
-                    destination, theTripName, time, date,TripType,Note);
+                    destination, theTripName, time, date,TripType);
             databaseReference.child(ID).setValue(trackerInformation);
             Toast.makeText(this, "Done Updated", Toast.LENGTH_SHORT).show();
 

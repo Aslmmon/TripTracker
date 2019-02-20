@@ -48,7 +48,7 @@ public class NewPlan extends AppCompatActivity {
     EditText startPosition, endPosition, tripName;
     DatabaseReference databaseReference;
     Button dateBtn, timeBtn, save;
-    TextView dateText , timeText;
+    TextView dateText, timeText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +73,7 @@ public class NewPlan extends AppCompatActivity {
             public void onClick(View view) {
                 saveToDatabase();
                 //showAlarmDialog();
-              //  saveTointernal();
+                //  saveTointernal();
                 setAlarm(false);
                 finish();
             }
@@ -82,17 +82,17 @@ public class NewPlan extends AppCompatActivity {
     }
 
     private void saveTointernal() {
-            DbHelper dbHelper = new DbHelper(getBaseContext());
-            sqLiteDatabase = dbHelper.getWritableDatabase();
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(DbContract.DbTripDetails.COLUMN_TRIP_NAME, TripName);
-            contentValues.put(DbContract.DbTripDetails.COLUMN_START_POINT, start);
-            contentValues.put(DbContract.DbTripDetails.COLUMN_END_POINT, destination);
-            contentValues.put(DbContract.DbTripDetails.COLUMN_DATE_TRIP, date);
-            contentValues.put(DbContract.DbTripDetails.COLUMN_TIME_TRIP, time);
+        DbHelper dbHelper = new DbHelper(getBaseContext());
+        sqLiteDatabase = dbHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DbContract.DbTripDetails.COLUMN_TRIP_NAME, TripName);
+        contentValues.put(DbContract.DbTripDetails.COLUMN_START_POINT, start);
+        contentValues.put(DbContract.DbTripDetails.COLUMN_END_POINT, destination);
+        contentValues.put(DbContract.DbTripDetails.COLUMN_DATE_TRIP, date);
+        contentValues.put(DbContract.DbTripDetails.COLUMN_TIME_TRIP, time);
 
-            long newRowId = sqLiteDatabase.insert(DbContract.DbTripDetails.TABLE_NAME,null,contentValues);
-            Toast.makeText(this, "Added internally succeffully", Toast.LENGTH_SHORT).show();
+        long newRowId = sqLiteDatabase.insert(DbContract.DbTripDetails.TABLE_NAME, null, contentValues);
+        Toast.makeText(this, "Added internally succeffully", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -136,7 +136,7 @@ public class NewPlan extends AppCompatActivity {
                 && !TextUtils.isEmpty(TripType)) {
             String id = databaseReference.push().getKey();
             TrackerInformation trackerInformation = new TrackerInformation(id, start,
-                    destination, TripName, time, date, TripType, Note);
+                    destination, TripName, time, date, TripType);
             databaseReference.child(id).setValue(trackerInformation);
             Toast.makeText(this, "Done Added", Toast.LENGTH_SHORT).show();
             tripName.setText("");

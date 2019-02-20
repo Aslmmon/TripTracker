@@ -1,25 +1,37 @@
 package com.example.android.plannertracker.TripDetails;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TrackerInformation {
+    public TripTypeView getTripTypeView() {
+        return tripTypeView;
+    }
+
+    public void setTripTypeView(TripTypeView tripTypeView) {
+        this.tripTypeView = tripTypeView;
+    }
+
+    public enum TripTypeView {
+        SINGLE_TRIP,ROUND_TRIP ;
+    }
+    private TripTypeView tripTypeView;
     private String id;
     private String StartPosition;
     private String destination;
     private String TripName;
     private String time;
     private String date;
-    private String Note;
     private String tripType;
+    private NoteClass notes;
 
-    public TrackerInformation(String note) {
-        this.Note = note;
-    }
 
     public TrackerInformation() {}
 
 
     public TrackerInformation(String id, String startPosition, String destination,
                               String tripName, String time, String date,
-                              String tripType, String Note) {
+                              String tripType) {
         this.id = id;
         this.StartPosition = startPosition;
         this.destination = destination;
@@ -27,7 +39,20 @@ public class TrackerInformation {
         this.time = time;
         this.date = date;
         this.tripType = tripType;
-        this.Note = Note;
+    }
+
+
+    public TrackerInformation(String id, String startPosition, String destination,
+                              String tripName, String time, String date,
+                              String tripType,NoteClass notes) {
+        this.id = id;
+        this.StartPosition = startPosition;
+        this.destination = destination;
+        TripName = tripName;
+        this.time = time;
+        this.date = date;
+        this.tripType = tripType;
+        this.notes = notes;
     }
 
 
@@ -79,19 +104,18 @@ public class TrackerInformation {
         TripName = tripName;
     }
 
-    public String getNote() {
-        return Note;
-    }
-
-    public void setNote(String note) {
-        Note = note;
-    }
-
     public String getTripType() {
         return tripType;
     }
 
+    public NoteClass getTripNotes() {
+        return notes;
+    }
+
     public void setTripType(String tripType) {
         this.tripType = tripType;
+    }
+    public void setTripNotes(NoteClass tripNotes) {
+        this.notes= tripNotes;
     }
 }
