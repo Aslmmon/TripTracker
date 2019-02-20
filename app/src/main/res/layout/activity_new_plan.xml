@@ -29,6 +29,7 @@
 
             <EditText
                 android:id="@+id/TripNameNew"
+                android:textColor="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/startPosition"
@@ -36,13 +37,14 @@
                 android:hint="TripName" />
 
             <EditText
+
                 android:id="@+id/startPosition"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:hint="Start"
-                android:textColor="@color/black" />
+                android:textColor="@color/white" />
 
             <EditText
                 android:id="@+id/destination"
@@ -52,7 +54,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:hint="End"
-                android:textColor="@color/black" />
+                android:textColor="@color/white" />
         </LinearLayout>
     </android.support.v7.widget.CardView>
 

@@ -26,6 +26,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -34,7 +36,7 @@ public class MainActivity extends AppCompatActivity
     String id;
 
 
-    DatabaseReference databaseReference, dataBaseNote;
+    DatabaseReference databaseReference;
     RecyclerView recyclerView;
     TrackerInformation trackerInformation;
     NoteClass noteClass;
@@ -45,63 +47,29 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        dataBaseNote = FirebaseDatabase.getInstance().getReference("Trip Data");
         databaseReference = FirebaseDatabase.getInstance().getReference("Trip Data");
-        //dataBaseNote.keepSynced(true);
         databaseReference.keepSynced(true);
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.i("trace", dataSnapshot.getKey());
                 trackerInformationList.clear();
                 for (DataSnapshot trackInfo : dataSnapshot.getChildren()) {
-                    TrackerInformation values = trackInfo.getValue(TrackerInformation.class);
-                    trackerInformation = new TrackerInformation();
-                    String nameOfTrip = values.getTripName();
-                    String start = values.getStartPosition();
-                    String end = values.getDestination();
-                    String date = values.getDate();
-                    String time = values.getTime();
-                    String tripType = values.getTripType();
-                //    String notes = values.getTripNotes().getMyNotes();
-                    id = values.getId();
-                    trackerInformation.setTripName(nameOfTrip);
-                    trackerInformation.setStartPosition(start);
-                    trackerInformation.setDestination(end);
-                    trackerInformation.setDate(date);
-                    trackerInformation.setTime(time);
-                    trackerInformation.setId(id);
-                    trackerInformation.setTripType(tripType);
-
-                    dataBaseNote.child(id).child("note").addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            for (DataSnapshot noteSnapshot : dataSnapshot.getChildren()) {
-                                NoteClass noteValues = noteSnapshot.getValue(NoteClass.class);
-                                noteClass = new NoteClass();
-                                String noteAdded = noteValues.getMyNotes();
-                                String id = noteValues.getId();
-                                noteClass.setId(id);
-                                noteClass.setMyNotes(noteAdded);
-                                Log.i("trace", noteAdded);
-                                Log.i("trace", id);
-                                trackerInformation.setTripNotes(noteClass);
-                                trackerInformationList.add(trackerInformation);
-//                                String notes = noteSnapshot.getKey();
-//                                Log.i("trace", (noteSnapshot.getKey()));
-//                                Log.i("trace", notes);
-//                                Log.i("trace", ""+noteSnapshot.getValue());
-//       //                         String notesValue = noteSnapshot.getValue();
-//                                notesList.add(notes);
-//                                trackerInformation.setTripNotes(notesList);
-//                                trackerInformationList.add(trackerInformation);
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
+                    getTrackDetails(trackInfo);
+                    for (DataSnapshot notesInfo : trackInfo.child("note").getChildren()){
+                        //Log.i("trace",notesInfo.getKey());
+                        //Log.i("trace",notesInfo.getValue().toString());
+                        NoteClass note = notesInfo.getValue(NoteClass.class);
+                        //Log.i("trace",note.toString());
+                        String myNote = note.getMyNotes();
+                        //Log.i("trace 2: ",myNote);
+                        noteClass = new NoteClass();
+                        noteClass.setMyNotes(myNote);
+                        //Log.i("trace 1 : ",noteClass.toString());
+                        //trackerInformation.setTripNotes(noteClass);
+                        //Log.i("trace",trackerInformation.getTripNotes().getMyNotes());
+                    }
+                    trackerInformation.setTripNotes(noteClass);
                     trackerInformationList.add(trackerInformation);
 
                 }
@@ -115,6 +83,46 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+    }
+
+    private void addNoteData(DataSnapshot trackInfo) {
+        NoteClass noteValues = trackInfo.child("note").child("myNotes").getValue(NoteClass.class);
+        String key = trackInfo.child("note").getKey();
+        String notes = trackInfo.child("note").getValue().toString();
+        Log.i("trace", "onDataChange: " + noteValues);
+        Log.i("trace", " key : " + key);
+        Log.i("trace", " noteNeedeeeeeed : " + notes);
+        noteClass = new NoteClass();
+        String NoteAdded = noteValues.getMyNotes();
+
+        String id = noteValues.getId();
+        Log.i("trace", "onDataChange: " + NoteAdded);
+        Log.i("trace", "onDataChange: " + id);
+        noteClass.setId(id);
+        noteClass.setMyNotes(NoteAdded);
+    }
+
+    private void getTrackDetails(DataSnapshot trackInfo) {
+//        Log.i("trace",trackInfo.getKey());
+//        Log.i("trace",trackInfo.getValue().toString());
+        TrackerInformation values = trackInfo.getValue(TrackerInformation.class);
+        trackerInformation = new TrackerInformation();
+        String nameOfTrip = values.getTripName();
+        String start = values.getStartPosition();
+        String end = values.getDestination();
+        String date = values.getDate();
+        String time = values.getTime();
+        String tripType = values.getTripType();
+        id = values.getId();
+        trackerInformation.setTripName(nameOfTrip);
+        trackerInformation.setStartPosition(start);
+        trackerInformation.setDestination(end);
+        trackerInformation.setDate(date);
+        trackerInformation.setTime(time);
+        trackerInformation.setId(id);
+        trackerInformation.setTripType(tripType);
+       // trackerInformation.setTripNotes(noteClass);
+      //  Log.i("trace",trackerInformation.getTripNotes().toString());
     }
 
     @Override

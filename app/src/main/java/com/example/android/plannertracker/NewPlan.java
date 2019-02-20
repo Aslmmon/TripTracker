@@ -28,6 +28,7 @@ import com.example.android.plannertracker.BroadCastRecievers.AlarmReciever;
 import com.example.android.plannertracker.BroadCastRecievers.NotificationReciever;
 import com.example.android.plannertracker.SqltieDatabase.DbContract;
 import com.example.android.plannertracker.SqltieDatabase.DbHelper;
+import com.example.android.plannertracker.TripDetails.NoteClass;
 import com.example.android.plannertracker.TripDetails.TrackerInformation;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -49,6 +50,7 @@ public class NewPlan extends AppCompatActivity {
     DatabaseReference databaseReference;
     Button dateBtn, timeBtn, save;
     TextView dateText, timeText;
+    NoteClass noteClass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +126,7 @@ public class NewPlan extends AppCompatActivity {
         radioButton = findViewById(radioId);
         Log.i("trace", radioButton.getText().toString());
         String Note = " ";
+        noteClass.setMyNotes(Note);
         TripType = radioButton.getText().toString();
         TripName = tripName.getText().toString();
         start = startPosition.getText().toString();
@@ -136,7 +139,7 @@ public class NewPlan extends AppCompatActivity {
                 && !TextUtils.isEmpty(TripType)) {
             String id = databaseReference.push().getKey();
             TrackerInformation trackerInformation = new TrackerInformation(id, start,
-                    destination, TripName, time, date, TripType);
+                    destination, TripName, time, date, TripType );
             databaseReference.child(id).setValue(trackerInformation);
             Toast.makeText(this, "Done Added", Toast.LENGTH_SHORT).show();
             tripName.setText("");
@@ -196,6 +199,7 @@ public class NewPlan extends AppCompatActivity {
     }
 
     private void initialize() {
+        noteClass = new NoteClass();
         radioGroup = findViewById(R.id.radioGrp);
         tripName = findViewById(R.id.TripNameNew);
         startPosition = findViewById(R.id.startPosition);
