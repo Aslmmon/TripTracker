@@ -25,7 +25,6 @@ import java.util.Calendar;
 public class EditActtivity extends AppCompatActivity {
     EditText startPosition, endPosition,tripName;
     RadioGroup radioGroup;
-    int tripTypeChooser;
     RadioButton radioButton,single,round;
     DatabaseReference databaseReference;
     Button date, time, update;
@@ -38,8 +37,8 @@ public class EditActtivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
-        getExtras();
         initialize();
+        getExtras();
         date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -80,6 +79,8 @@ public class EditActtivity extends AppCompatActivity {
 
     private void updateToDatabase() {
         String Note = "";
+        int tripTypeChooser = radioGroup.getCheckedRadioButtonId();
+        radioButton = findViewById(tripTypeChooser);
         String TripType = radioButton.getText().toString();
         String theTripName = tripName.getText().toString();
         String start = startPosition.getText().toString();
@@ -152,21 +153,19 @@ public class EditActtivity extends AppCompatActivity {
 
     private void initialize() {
 
-        radioGroup = findViewById(R.id.radioGrp);
-        tripTypeChooser = radioGroup.getCheckedRadioButtonId();
-        radioButton.findViewById(tripTypeChooser);
+        radioGroup = findViewById(R.id.radioGroupUpdated);
         single = findViewById(R.id.single);
         round = findViewById(R.id.round);
 
         trackerInformation = new TrackerInformation();
         tripName = findViewById(R.id.TripNameEdit);
-        startPosition = findViewById(R.id.startPosition);
-        endPosition = findViewById(R.id.destination);
+        startPosition = findViewById(R.id.beginUpdate);
+        endPosition = findViewById(R.id.destinationUpdate);
         update = findViewById(R.id.updateInDatabase);
-        date = findViewById(R.id.chooseDate);
-        time = findViewById(R.id.chooseTime);
-        timeText = findViewById(R.id.timeText);
-        dateText = findViewById(R.id.dateText);
+        date = findViewById(R.id.chooseDateUpdate);
+        time = findViewById(R.id.chooseTimeUpdate);
+        timeText = findViewById(R.id.timeTextUpdate);
+        dateText = findViewById(R.id.dateTextUpdate);
         databaseReference = FirebaseDatabase.getInstance().getReference("Trip Data");
 
     }

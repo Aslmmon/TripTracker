@@ -29,12 +29,12 @@
                 android:id="@+id/TripNameEdit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_above="@+id/startPosition"
+                android:layout_above="@+id/begin"
                 android:layout_marginLeft="10dp"
                 android:hint="TripName" />
 
             <EditText
-                android:id="@+id/startPosition"
+                android:id="@+id/beginUpdate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
@@ -43,7 +43,7 @@
                 android:textColor="@color/white" />
 
             <EditText
-                android:id="@+id/destination"
+                android:id="@+id/destinationUpdate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/startPosition"
@@ -61,7 +61,7 @@
         android:weightSum="2">
 
         <Button
-            android:id="@+id/chooseDate"
+            android:id="@+id/chooseDateUpdate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -70,7 +70,7 @@
             android:textAllCaps="false" />
 
         <TextView
-            android:id="@+id/dateText"
+            android:id="@+id/dateTextUpdate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -87,7 +87,7 @@
         android:weightSum="2">
 
         <Button
-            android:id="@+id/chooseTime"
+            android:id="@+id/chooseTimeUpdate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -96,7 +96,7 @@
             android:textAllCaps="false" />
 
         <TextView
-            android:id="@+id/timeText"
+            android:id="@+id/timeTextUpdate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -122,6 +122,7 @@
         <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/radioGroupUpdated"
             android:orientation="horizontal">
 
             <RadioButton
