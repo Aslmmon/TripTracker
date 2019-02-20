@@ -55,7 +55,10 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
     public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
         trackerInformation = trackerInformations.get(position);
         holder.trip.setText(trackerInformation.getTripName());
-        holder.noteTaken.setText(trackerInformation.getTripNotes().getMyNotes());
+
+        if (trackerInformation.getTripNotes().getMyNotes() != null) {
+            holder.noteTaken.setText(trackerInformation.getTripNotes().getMyNotes());
+        }
         holder.buttonView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,7 +75,7 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
         holder.checkBoxFinishedNotes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b){
+                if (b) {
                     Toast.makeText(context, "Remove Note", Toast.LENGTH_SHORT).show();
                 }
 
@@ -116,8 +119,8 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
     }
 
     private void goToAddNoteActivity(int adapterPosition) {
-        Intent intent = new Intent(context,AddNote.class);
-        intent.putExtra("id",trackerInformations.get(adapterPosition).getId());
+        Intent intent = new Intent(context, AddNote.class);
+        intent.putExtra("id", trackerInformations.get(adapterPosition).getId());
         context.startActivity(intent);
     }
 
@@ -130,7 +133,7 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
         goToEdit.putExtra("time", trackerInformations.get(adapterPosition).getTime());
         goToEdit.putExtra("id", trackerInformations.get(adapterPosition).getId());
         goToEdit.putExtra("tripType", trackerInformations.get(adapterPosition).getTripType());
-      //  goToEdit.putExtra("tripType", trackerInformation.getTripType());
+        //  goToEdit.putExtra("tripType", trackerInformation.getTripType());
         Log.i("trace", "ID : " + trackerInformation.getId());
         context.startActivity(goToEdit);
     }
@@ -180,16 +183,15 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
     }
 
 
-
     @Override
     public int getItemCount() {
         return trackerInformations.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView start, end, date, time, buttonView, trip,noteTaken;
+        TextView start, end, date, time, buttonView, trip, noteTaken;
         LinearLayout myLayout;
-        CheckBox checkBox,checkBoxFinishedNotes;
+        CheckBox checkBox, checkBoxFinishedNotes;
 
         public MyViewHolder(View itemView) {
             super(itemView);
