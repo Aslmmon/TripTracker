@@ -68,7 +68,6 @@ public class NewPlan extends AppCompatActivity {
         startPosition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 showStartPlaces();
 
             }
@@ -96,8 +95,6 @@ public class NewPlan extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 saveToDatabase();
-                //showAlarmDialog();
-                //  saveTointernal();
                 setAlarm(false);
                 finish();
             }
@@ -203,7 +200,7 @@ public class NewPlan extends AppCompatActivity {
         radioButton = findViewById(radioId);
         Log.i("trace", radioButton.getText().toString());
         String Note = " ";
-        noteClass.setMyNotes(Note);
+//        noteClass.setMyNotes(Note);
         TripType = radioButton.getText().toString();
         TripName = tripName.getText().toString();
         start = startPosition.getText().toString();
@@ -276,7 +273,7 @@ public class NewPlan extends AppCompatActivity {
     }
 
     private void initialize() {
-        noteClass = new NoteClass();
+
         radioGroup = findViewById(R.id.radioGrp);
         tripName = findViewById(R.id.TripNameNew);
         startPosition = findViewById(R.id.startPosition);
@@ -306,9 +303,9 @@ public class NewPlan extends AppCompatActivity {
         c.set(mYear, mMonth, mDay, hour, minute, 0);
         manager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(),
                 pendingIntent);
-        Log.i("trace", String.valueOf(c));
-        Log.i("trace", String.valueOf(c.getTimeInMillis()));
-        Log.i("trace", String.valueOf(c.getTimeZone()));
-        Log.i("trace", String.valueOf(c.getTime()));
+        Log.i("time Save", String.valueOf(c));
+        Log.i("time Save", String.valueOf(c.getTimeInMillis()));
+        Log.i("time Save", String.valueOf(c.getTimeZone()));
+        Log.i("time Save", String.valueOf(c.getTime()));
     }
 }

@@ -27,8 +27,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -63,9 +61,10 @@ public class MainActivity extends AppCompatActivity
                         //Log.i("trace",notesInfo.getValue().toString());
                         NoteClass note = notesInfo.getValue(NoteClass.class);
                         //Log.i("trace",note.toString());
+                       // id = note.getId();
                         String myNote = note.getMyNotes();
                         //Log.i("trace 2: ",myNote);
-                        noteClass = new NoteClass();
+                        noteClass = new NoteClass(id, myNote);
                         noteClass.setMyNotes(myNote);
                         //Log.i("trace 1 : ",noteClass.toString());
                         //trackerInformation.setTripNotes(noteClass);
@@ -94,7 +93,7 @@ public class MainActivity extends AppCompatActivity
         Log.i("trace", "onDataChange: " + noteValues);
         Log.i("trace", " key : " + key);
         Log.i("trace", " noteNeedeeeeeed : " + notes);
-        noteClass = new NoteClass();
+        noteClass = new NoteClass(id, notes);
         String NoteAdded = noteValues.getMyNotes();
 
         String id = noteValues.getId();
