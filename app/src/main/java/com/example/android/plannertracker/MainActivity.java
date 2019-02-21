@@ -1,6 +1,7 @@
 package com.example.android.plannertracker;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -33,6 +34,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     public static final String TRIP_DATA = "Trip Data";
+    SharedPreferences sharedPreferences;
     String id;
 
 

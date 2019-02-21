@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -24,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder> {
     public static final String CLICKED_ITEM_POSITION = "ClickedItemPoisiton";
@@ -55,10 +58,15 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
     public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
         trackerInformation = trackerInformations.get(position);
         holder.trip.setText(trackerInformation.getTripName());
+//
+//        SharedPreferences mySharedPreferences = getS
+//        SharedPreferences.Editor editor = mySharedPreferences.edit();
+//        editor.putString("USERNAME",trackerInformation.getStartPosition());
+//        editor.apply();
 
-        if (trackerInformation.getTripNotes().getMyNotes() != null) {
-            holder.noteTaken.setText(trackerInformation.getTripNotes().getMyNotes());
-        }
+//        if (trackerInformation.getTripNotes().getMyNotes() != null) {
+//            holder.noteTaken.setText(trackerInformation.getTripNotes().getMyNotes());
+//        }
         holder.buttonView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,6 +105,7 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
                         break;
                     case R.id.start:
                         Toast.makeText(context, "start", Toast.LENGTH_SHORT).show();
+                        startMap();
                         break;
                     case R.id.view:
                         Toast.makeText(context, "view", Toast.LENGTH_SHORT).show();
@@ -180,6 +189,16 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
         notifyItemRemoved(adapterPosition);
         notifyItemRangeChanged(adapterPosition, trackerInformations.size());
         Toast.makeText(context, "Removed Successfully", Toast.LENGTH_SHORT).show();
+    }
+    private void startMap() {
+        String start = trackerInformation.getStartPosition();
+        String end = trackerInformation.getDestination();
+        Log.v("testloc",start+" "+end);
+        String uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?saddr="+start+"&daddr="+end);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+        intent.setPackage("com.google.android.apps.maps");
+        context.startActivity(intent);
     }
 
 

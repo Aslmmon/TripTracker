@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -19,15 +20,19 @@ import android.widget.Toast;
 import com.example.android.plannertracker.NewPlan;
 import com.example.android.plannertracker.R;
 
+import java.util.Locale;
+
 public class AlarmDialog extends AppCompatActivity {
     public static final int NOTIFICATION_ALARM = 1;
     Ringtone ringtone;
+    public static final String PREFS_NAME ="MyPrefsFile";
     boolean flag = false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         if (!flag) {
             playSound();
@@ -52,6 +57,7 @@ public class AlarmDialog extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         ringtone.stop();
                         Toast.makeText(AlarmDialog.this, "Starting", Toast.LENGTH_SHORT).show();
+                        openMap();
                         finish();
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -71,6 +77,19 @@ public class AlarmDialog extends AppCompatActivity {
                 finish();
             }
         }).create().show();
+    }
+
+    private void openMap() {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME , 0);
+        String startPoint=(settings.getString("start",null));
+        String endPoint=(settings.getString("end",null));
+
+
+        String uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?saddr="+startPoint+"&daddr="+endPoint);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+        intent.setPackage("com.google.android.apps.maps");
+        startActivity(intent);
     }
 
     private void sendNotification() {

@@ -9,6 +9,7 @@ android {
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -33,4 +34,10 @@ dependencies {
     implementation 'com.google.android.libraries.places:places:1.0.0'
     implementation 'com.google.firebase:firebase-database:16.0.1'
     implementation 'de.hdodenhof:circleimageview:3.0.0'
+
+   // implementation 'com.android.support:animated-vector-drawable:27.1.1'
+    implementation 'com.google.firebase:firebase-core:16.0.7'
+    // places sdk
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-places-v7:0.7.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-markerview-v7:0.2.0'
 }
