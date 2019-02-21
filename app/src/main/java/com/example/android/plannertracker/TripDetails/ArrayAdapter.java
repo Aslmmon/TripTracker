@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder> {
+public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder>  {
     public static final String CLICKED_ITEM_POSITION = "ClickedItemPoisiton";
 
 

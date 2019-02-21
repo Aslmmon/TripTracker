@@ -56,21 +56,21 @@ public class MainActivity extends AppCompatActivity
                 trackerInformationList.clear();
                 for (DataSnapshot trackInfo : dataSnapshot.getChildren()) {
                     getTrackDetails(trackInfo);
-                    for (DataSnapshot notesInfo : trackInfo.child("note").getChildren()){
-                        //Log.i("trace",notesInfo.getKey());
-                        //Log.i("trace",notesInfo.getValue().toString());
-                        NoteClass note = notesInfo.getValue(NoteClass.class);
-                        //Log.i("trace",note.toString());
-                       // id = note.getId();
-                        String myNote = note.getMyNotes();
-                        //Log.i("trace 2: ",myNote);
-                        noteClass = new NoteClass(id, myNote);
-                        noteClass.setMyNotes(myNote);
-                        //Log.i("trace 1 : ",noteClass.toString());
-                        //trackerInformation.setTripNotes(noteClass);
-                        //Log.i("trace",trackerInformation.getTripNotes().getMyNotes());
-                    }
-                    trackerInformation.setTripNotes(noteClass);
+//                    for (DataSnapshot notesInfo : trackInfo.child("note").getChildren()){
+//                        //Log.i("trace",notesInfo.getKey());
+//                        //Log.i("trace",notesInfo.getValue().toString());
+//                        NoteClass note = notesInfo.getValue(NoteClass.class);
+//                        //Log.i("trace",note.toString());
+//                       // id = note.getId();
+//                        String myNote = note.getMyNotes();
+//                        //Log.i("trace 2: ",myNote);
+//                        noteClass = new NoteClass(id, myNote);
+//                        noteClass.setMyNotes(myNote);
+//                        //Log.i("trace 1 : ",noteClass.toString());
+//                        //trackerInformation.setTripNotes(noteClass);
+//                        //Log.i("trace",trackerInformation.getTripNotes().getMyNotes());
+//                    }
+//                    trackerInformation.setTripNotes(noteClass);
                     trackerInformationList.add(trackerInformation);
 
                 }

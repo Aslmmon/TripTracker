@@ -44,7 +44,7 @@
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
         <activity
             android:name=".TripDetails.AddNote"
-            android:theme="@style/Theme.AppCompat.Dialog"
+            android:theme="@style/Theme.AppCompat.DayNight.DialogWhenLarge"
             android:label="@string/addNote" />
     </application>
 
