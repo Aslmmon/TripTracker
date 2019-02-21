@@ -35,8 +35,6 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
 
     private Context context;
     private ArrayList<TrackerInformation> trackerInformations;
-    private List<String> notes;
-    NoteClass noteClass;
     TrackerInformation trackerInformation;
     DatabaseReference databaseReference;
 
@@ -59,15 +57,6 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
     public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
         trackerInformation = trackerInformations.get(position);
         holder.trip.setText(trackerInformation.getTripName());
-//
-//        SharedPreferences mySharedPreferences = getS
-//        SharedPreferences.Editor editor = mySharedPreferences.edit();
-//        editor.putString("USERNAME",trackerInformation.getStartPosition());
-//        editor.apply();
-
-//        if (trackerInformation.getTripNotes().getMyNotes() != null) {
-//            holder.noteTaken.setText(trackerInformation.getTripNotes().getMyNotes());
-//        }
         holder.buttonView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,15 +70,6 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
             }
         });
 
-        holder.checkBoxFinishedNotes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    Toast.makeText(context, "Remove Note", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
     }
 
 
@@ -209,9 +189,9 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView start, end, date, time, buttonView, trip, noteTaken;
+        TextView start, end, date, time, buttonView, trip;
         LinearLayout myLayout;
-        CheckBox checkBox, checkBoxFinishedNotes;
+        CheckBox checkBox;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -219,8 +199,6 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
             buttonView = itemView.findViewById(R.id.textViewOptions);
             myLayout = itemView.findViewById(R.id.Linear);
             checkBox = itemView.findViewById(R.id.checkFinished);
-            noteTaken = itemView.findViewById(R.id.tripHomeNotes);
-            checkBoxFinishedNotes = itemView.findViewById(R.id.checkFinishedNotes);
         }
     }
 }
