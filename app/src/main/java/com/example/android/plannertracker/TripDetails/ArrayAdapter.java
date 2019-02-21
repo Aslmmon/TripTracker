@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -18,12 +19,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.plannertracker.NewPlan;
 import com.example.android.plannertracker.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder> {
     public static final String CLICKED_ITEM_POSITION = "ClickedItemPoisiton";
@@ -35,6 +38,7 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
     NoteClass noteClass;
     TrackerInformation trackerInformation;
     DatabaseReference databaseReference;
+
 
     public ArrayAdapter(Context context, ArrayList<TrackerInformation> trackerInformations) {
         this.context = context;
@@ -83,6 +87,7 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
     private void addPopUp(@NonNull final MyViewHolder holder) {
         PopupMenu popupMenu = new PopupMenu(context, holder.buttonView);
         popupMenu.inflate(R.menu.item_lists);
+
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -93,6 +98,7 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
                         break;
                     case R.id.start:
                         Toast.makeText(context, "start", Toast.LENGTH_SHORT).show();
+                        startMap();
                         break;
                     case R.id.view:
                         Toast.makeText(context, "view", Toast.LENGTH_SHORT).show();
@@ -112,6 +118,17 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
             }
         });
         popupMenu.show();
+    }
+
+    private void startMap() {
+        String start = trackerInformation.getStartPosition();
+        String end = trackerInformation.getDestination();
+        Log.v("testloc",start+" "+end);
+        String uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?saddr="+start+"&daddr="+end);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+        intent.setPackage("com.google.android.apps.maps");
+        context.startActivity(intent);
     }
 
     private void goToAddNoteActivity(int adapterPosition) {

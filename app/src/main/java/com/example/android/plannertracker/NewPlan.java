@@ -1,5 +1,6 @@
 package com.example.android.plannertracker;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -8,6 +9,7 @@ import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -28,9 +30,13 @@ import com.example.android.plannertracker.BroadCastRecievers.AlarmReciever;
 import com.example.android.plannertracker.BroadCastRecievers.NotificationReciever;
 import com.example.android.plannertracker.SqltieDatabase.DbContract;
 import com.example.android.plannertracker.SqltieDatabase.DbHelper;
+import com.example.android.plannertracker.TripDetails.EditActtivity;
 import com.example.android.plannertracker.TripDetails.TrackerInformation;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.mapbox.api.geocoding.v5.models.CarmenFeature;
+import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
+import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
 
 import java.util.Calendar;
 
@@ -45,10 +51,12 @@ public class NewPlan extends AppCompatActivity {
     RadioGroup radioGroup;
     RadioButton radioButton;
     int hour, minute, mYear, mMonth, mDay;
-    EditText startPosition, endPosition, tripName;
+    TextView startPosition, endPosition, tripName;
     DatabaseReference databaseReference;
     Button dateBtn, timeBtn, save;
     TextView dateText, timeText;
+    private static final String token = "sk.eyJ1IjoibWlsa3lyYW5nZXIiLCJhIjoiY2pzOTBzOXlxMTZ6ZDN6czhiNTJjY2JrdCJ9.TVE3NN-juPXRMYr14hRBFA";
+    public static final String PREFS_NAME ="MyPrefsFile";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +84,22 @@ public class NewPlan extends AppCompatActivity {
                 //  saveTointernal();
                 setAlarm(false);
                 finish();
+            }
+        });
+
+        startPosition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                showStartPlaces();
+
+            }
+        });
+        endPosition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showEndPlaces();
+
             }
         });
 
@@ -230,4 +254,72 @@ public class NewPlan extends AppCompatActivity {
         Log.i("trace", String.valueOf(c.getTimeZone()));
         Log.i("trace", String.valueOf(c.getTime()));
     }
+
+    public void showStartPlaces() {
+        Intent intent = new PlaceAutocomplete.IntentBuilder()
+                .accessToken(token)
+                .placeOptions(PlaceOptions.builder().build(PlaceOptions.MODE_CARDS))
+                .build(NewPlan.this);
+        startActivityForResult(intent, 1);
+
+
+    }
+
+
+    public void showEndPlaces() {
+        Intent intent = new PlaceAutocomplete.IntentBuilder()
+                .accessToken(token)
+                .placeOptions(PlaceOptions.builder().build(PlaceOptions.MODE_CARDS))
+                .build(NewPlan.this);
+        startActivityForResult(intent, 2);
+
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK && requestCode == 1) {
+            CarmenFeature feature = PlaceAutocomplete.getPlace(data);
+            Toast.makeText(this, feature.text(), Toast.LENGTH_LONG).show();
+            start = feature.text();
+
+            startPosition.setText(start);
+            // adding shared pref
+            SharedPreferences settings = getSharedPreferences(PREFS_NAME , 0);
+            String startP = feature.text();
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString("start",startP);
+            editor.commit();
+
+
+        } else if (resultCode == Activity.RESULT_OK && requestCode == 2) {
+            CarmenFeature feature = PlaceAutocomplete.getPlace(data);
+            Toast.makeText(this, feature.text(), Toast.LENGTH_LONG).show();
+            destination = feature.text();
+
+            endPosition.setText(destination);
+            // adding shared pref
+
+            SharedPreferences settings = getSharedPreferences(PREFS_NAME , 0);
+            String endP = feature.text();
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString("end",endP);
+            editor.commit();
+
+
+        }
+    }
+
+    public String getStart() {
+        return start;
+    }
+    public String getDestination() {
+        return destination;
+    }
+
 }
+
+
+
+

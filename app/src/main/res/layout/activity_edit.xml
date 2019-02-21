@@ -42,7 +42,7 @@
                 android:hint="Start"
                 android:textColor="@color/black" />
 
-            <EditText
+            <EditTexti
                 android:id="@+id/destination"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
