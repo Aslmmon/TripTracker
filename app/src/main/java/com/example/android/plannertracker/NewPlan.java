@@ -96,11 +96,14 @@ public class NewPlan extends AppCompatActivity {
             public void onClick(View view) {
                 saveToDatabase();
                 setAlarm(false);
+
                 finish();
             }
         });
 
     }
+
+
 
     private void saveTointernal() {
         DbHelper dbHelper = new DbHelper(getBaseContext());
@@ -157,10 +160,8 @@ public class NewPlan extends AppCompatActivity {
             CarmenFeature feature = PlaceAutocomplete.getPlace(data);
             Toast.makeText(this, feature.text(), Toast.LENGTH_LONG).show();
             destination = feature.text();
-
             endPosition.setText(destination);
             // adding shared pref
-
             SharedPreferences settings = getSharedPreferences(PREFS_NAME , 0);
             String endP = feature.text();
             SharedPreferences.Editor editor = settings.edit();
@@ -224,6 +225,11 @@ public class NewPlan extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Enter Valid bodies", Toast.LENGTH_SHORT).show();
         }
+
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME , 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("tripName",TripName);
+        editor.commit();
     }
 
     private void chooseTime() {

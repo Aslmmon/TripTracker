@@ -49,9 +49,11 @@ public class AlarmDialog extends AppCompatActivity {
     }
 
     private void showAlarmDialog() {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME , 0);
+        String tripName = settings.getString("tripName","No trip");
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Reminder To your Trip")
-                .setMessage("Your Trip is : ")
+                .setMessage("Your Trip is : " + tripName)
                 .setPositiveButton("Ok Start", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -74,7 +76,7 @@ public class AlarmDialog extends AppCompatActivity {
                 ringtone.stop();
                 Toast.makeText(AlarmDialog.this, "sending Notification", Toast.LENGTH_SHORT).show();
                 sendNotification();
-                finish();
+               // finish();
             }
         }).create().show();
     }
@@ -100,7 +102,7 @@ public class AlarmDialog extends AppCompatActivity {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_SOUND)
-                .setSmallIcon(R.drawable.family_son)
+                .setSmallIcon(R.drawable.map)
                 .setContentTitle("Your trip")
                 .setContentText("Check out your Trip")
                 .setContentInfo("info")
