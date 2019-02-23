@@ -23,10 +23,9 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
     private ArrayList<HistoryList> historyLists;
     private HistoryList historyList ;
 
-    HistoryRecyclerAdapter()
-    {
-
+    public HistoryRecyclerAdapter() {
     }
+
     HistoryRecyclerAdapter(Context context , ArrayList<HistoryList> historyLists )
     {
         this.mInflater = LayoutInflater.from(context);
