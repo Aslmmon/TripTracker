@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.PopupMenu;
@@ -19,7 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.plannertracker.NewPlan;
 import com.example.android.plannertracker.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -31,23 +31,24 @@ import java.util.Locale;
 public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder> {
     public static final String CLICKED_ITEM_POSITION = "ClickedItemPoisiton";
 
-
+    public static final String PREFS_NAME ="MyPrefsFile";
     private Context context;
     private ArrayList<TrackerInformation> trackerInformations;
     private List<String> notes;
     NoteClass noteClass;
     TrackerInformation trackerInformation;
-    DatabaseReference databaseReference;
+    DatabaseReference databaseReference , databaseReferenceTwo;
 
-
-    public ArrayAdapter(Context context, ArrayList<TrackerInformation> trackerInformations) {
+    public ArrayAdapter(Context context, ArrayList<TrackerInformation> trackerInformations)
+    {
         this.context = context;
         this.trackerInformations = trackerInformations;
     }
 
     @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+    {
         View view = LayoutInflater.from(parent.getContext()).
                 inflate(R.layout.my_list_home, parent, false);
 
@@ -59,6 +60,8 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
     public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
         trackerInformation = trackerInformations.get(position);
         holder.trip.setText(trackerInformation.getTripName());
+//
+
         holder.buttonView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,25 +72,49 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
+
+                int positionOfItem = holder.getAdapterPosition();
+                showDialogForHistory(positionOfItem);
+
+
+
             }
         });
 
         holder.checkBoxFinishedNotes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b){
+                if (b) {
+
                     Toast.makeText(context, "Remove Note", Toast.LENGTH_SHORT).show();
                 }
 
             }
         });
     }
+   public void saveToFinishedDatabase(int position)
+   {
+       String id = databaseReferenceTwo.push().getKey();
+       HistoryList historyList = new HistoryList(trackerInformations.get(position).getStartPosition(),trackerInformations.get(position).getDestination(),trackerInformations.get(position).getTripName()) ;
+       databaseReferenceTwo.child(id).setValue(historyList);
+   }
+
+    public void moveToHistory(int position)
+    {
+
+        HistoryList historyList = new HistoryList(trackerInformations.get(position).getStartPosition(),trackerInformations.get(position).getDestination(),trackerInformations.get(position).getTripName()) ;
+        Toast.makeText(context,trackerInformations.get(position).getStartPosition() , Toast.LENGTH_SHORT).show();
 
 
-    private void addPopUp(@NonNull final MyViewHolder holder) {
+
+    }
+
+
+
+    private void addPopUp(@NonNull final MyViewHolder holder)
+    {
         PopupMenu popupMenu = new PopupMenu(context, holder.buttonView);
         popupMenu.inflate(R.menu.item_lists);
-
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -120,20 +147,10 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
         popupMenu.show();
     }
 
-    private void startMap() {
-        String start = trackerInformation.getStartPosition();
-        String end = trackerInformation.getDestination();
-        Log.v("testloc",start+" "+end);
-        String uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?saddr="+start+"&daddr="+end);
-
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-        intent.setPackage("com.google.android.apps.maps");
-        context.startActivity(intent);
-    }
-
-    private void goToAddNoteActivity(int adapterPosition) {
-        Intent intent = new Intent(context,AddNote.class);
-        intent.putExtra("id",trackerInformations.get(adapterPosition).getId());
+    private void goToAddNoteActivity(int adapterPosition)
+    {
+        Intent intent = new Intent(context, AddNote.class);
+        intent.putExtra("id", trackerInformations.get(adapterPosition).getId());
         context.startActivity(intent);
     }
 
@@ -146,11 +163,28 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
         goToEdit.putExtra("time", trackerInformations.get(adapterPosition).getTime());
         goToEdit.putExtra("id", trackerInformations.get(adapterPosition).getId());
         goToEdit.putExtra("tripType", trackerInformations.get(adapterPosition).getTripType());
-      //  goToEdit.putExtra("tripType", trackerInformation.getTripType());
+        //  goToEdit.putExtra("tripType", trackerInformation.getTripType());
         Log.i("trace", "ID : " + trackerInformation.getId());
         context.startActivity(goToEdit);
     }
 
+    private void showDialogForHistory(final int adapterpostion) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                databaseReferenceTwo = FirebaseDatabase.getInstance().getReference("Trip History");
+                saveToFinishedDatabase(adapterpostion);
+                moveToHistory(adapterpostion);
+                removeItem(adapterpostion);
+            }
+        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Toast.makeText(context, "cancel", Toast.LENGTH_SHORT).show();
+            }
+        }).setTitle("Remove item").setMessage("Are you sure ? ").create().show();
+    }
     private void showDialog(final int adapterpostion) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
@@ -194,7 +228,16 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
         notifyItemRangeChanged(adapterPosition, trackerInformations.size());
         Toast.makeText(context, "Removed Successfully", Toast.LENGTH_SHORT).show();
     }
+    private void startMap() {
+        String start = trackerInformation.getStartPosition();
+        String end = trackerInformation.getDestination();
+        Log.v("testloc",start+" "+end);
+        String uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?saddr="+start+"&daddr="+end);
 
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+        intent.setPackage("com.google.android.apps.maps");
+        context.startActivity(intent);
+    }
 
 
     @Override
@@ -203,9 +246,9 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView start, end, date, time, buttonView, trip,noteTaken;
+        TextView start, end, date, time, buttonView, trip, noteTaken;
         LinearLayout myLayout;
-        CheckBox checkBox,checkBoxFinishedNotes;
+        CheckBox checkBox, checkBoxFinishedNotes;
 
         public MyViewHolder(View itemView) {
             super(itemView);

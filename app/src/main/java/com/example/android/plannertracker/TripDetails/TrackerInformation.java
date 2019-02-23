@@ -2,6 +2,7 @@ package com.example.android.plannertracker.TripDetails;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class TrackerInformation {
     public TripTypeView getTripTypeView() {
@@ -24,6 +25,7 @@ public class TrackerInformation {
     private String date;
     private String tripType;
     private NoteClass notes;
+    //private Map<String,NoteClass> notes;
 
 
     public TrackerInformation() {}

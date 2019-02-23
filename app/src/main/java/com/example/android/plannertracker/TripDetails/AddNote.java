@@ -43,11 +43,17 @@ public class AddNote extends AppCompatActivity {
                 NoteClass noteClass = new NoteClass(key,note);
                 databaseReference.child(IDClicked).child("note").child(key).setValue(noteClass);
                 Toast.makeText(AddNote.this, "Done added", Toast.LENGTH_SHORT).show();
-                startService(new Intent(AddNote.this, ChatHeadService.class));
+                sendId(IDClicked);
                 finish();
             }
         });
 
+    }
+
+    private void sendId(String IDClicked) {
+        Intent intent = new Intent(AddNote.this,ChatHeadService.class);
+        intent.putExtra("id", IDClicked);
+        startService(intent);
     }
 
     private void initialize() {

@@ -12,7 +12,7 @@
     android:layout_height="150sp"
     android:maxLines="1"
     android:maxLength="20"
-    android:textColorHint="@color/blue"
+    android:textColorHint="@color/white"
     android:hint="Enter Your Notes .."
     android:id="@+id/editNote"/>
 

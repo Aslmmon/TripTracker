@@ -1,6 +1,8 @@
 package com.example.android.plannertracker;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -17,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.example.android.plannertracker.TripDetails.ArrayAdapter;
+import com.example.android.plannertracker.TripDetails.History;
 import com.example.android.plannertracker.TripDetails.NoteClass;
 import com.example.android.plannertracker.TripDetails.TrackerInformation;
 import com.google.firebase.database.DataSnapshot;
@@ -26,15 +29,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     public static final String TRIP_DATA = "Trip Data";
+    SharedPreferences sharedPreferences;
     String id;
+     Context context;
 
-
-    DatabaseReference databaseReference, dataBaseNote;
+    DatabaseReference databaseReference;
     RecyclerView recyclerView;
     TrackerInformation trackerInformation;
     NoteClass noteClass;
@@ -45,63 +51,26 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        dataBaseNote = FirebaseDatabase.getInstance().getReference("Trip Data");
         databaseReference = FirebaseDatabase.getInstance().getReference("Trip Data");
-        //dataBaseNote.keepSynced(true);
         databaseReference.keepSynced(true);
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            //    Log.i("trace", dataSnapshot.getKey());
                 trackerInformationList.clear();
                 for (DataSnapshot trackInfo : dataSnapshot.getChildren()) {
-                    TrackerInformation values = trackInfo.getValue(TrackerInformation.class);
-                    trackerInformation = new TrackerInformation();
-                    String nameOfTrip = values.getTripName();
-                    String start = values.getStartPosition();
-                    String end = values.getDestination();
-                    String date = values.getDate();
-                    String time = values.getTime();
-                    String tripType = values.getTripType();
-                //    String notes = values.getTripNotes().getMyNotes();
-                    id = values.getId();
-                    trackerInformation.setTripName(nameOfTrip);
-                    trackerInformation.setStartPosition(start);
-                    trackerInformation.setDestination(end);
-                    trackerInformation.setDate(date);
-                    trackerInformation.setTime(time);
-                    trackerInformation.setId(id);
-                    trackerInformation.setTripType(tripType);
+                    getTrackDetails(trackInfo);
+                    for (DataSnapshot notesInfo : trackInfo.child("note").getChildren()){
 
-                    dataBaseNote.child(id).child("note").addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            for (DataSnapshot noteSnapshot : dataSnapshot.getChildren()) {
-                                NoteClass noteValues = noteSnapshot.getValue(NoteClass.class);
-                                noteClass = new NoteClass();
-                                String noteAdded = noteValues.getMyNotes();
-                                String id = noteValues.getId();
-                                noteClass.setId(id);
-                                noteClass.setMyNotes(noteAdded);
-                                Log.i("trace", noteAdded);
-                                Log.i("trace", id);
-                                trackerInformation.setTripNotes(noteClass);
-                                trackerInformationList.add(trackerInformation);
-//                                String notes = noteSnapshot.getKey();
-//                                Log.i("trace", (noteSnapshot.getKey()));
-//                                Log.i("trace", notes);
-//                                Log.i("trace", ""+noteSnapshot.getValue());
-//       //                         String notesValue = noteSnapshot.getValue();
-//                                notesList.add(notes);
-//                                trackerInformation.setTripNotes(notesList);
-//                                trackerInformationList.add(trackerInformation);
-                            }
-                        }
+                        NoteClass note = notesInfo.getValue(NoteClass.class);
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        String myNote = note.getMyNotes();
 
-                        }
-                    });
+                        noteClass = new NoteClass();
+                        noteClass.setMyNotes(myNote);
+
+                    }
+                    trackerInformation.setTripNotes(noteClass);
                     trackerInformationList.add(trackerInformation);
 
                 }
@@ -115,6 +84,47 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+    }
+
+    private void addNoteData(DataSnapshot trackInfo) {
+        NoteClass noteValues = trackInfo.child("note").child("myNotes").getValue(NoteClass.class);
+        String key = trackInfo.child("note").getKey();
+        String notes = trackInfo.child("note").getValue().toString();
+        Log.i("trace", "onDataChange: " + noteValues);
+        Log.i("trace", " key : " + key);
+        Log.i("trace", " noteNeedeeeeeed : " + notes);
+        noteClass = new NoteClass();
+        String NoteAdded = noteValues.getMyNotes();
+
+        String id = noteValues.getId();
+        Log.i("trace", "onDataChange: " + NoteAdded);
+        Log.i("trace", "onDataChange: " + id);
+        noteClass.setId(id);
+        noteClass.setMyNotes(NoteAdded);
+    }
+
+    private void getTrackDetails(DataSnapshot trackInfo)
+    {
+//        Log.i("trace",trackInfo.getKey());
+//        Log.i("trace",trackInfo.getValue().toString());
+        TrackerInformation values = trackInfo.getValue(TrackerInformation.class);
+        trackerInformation = new TrackerInformation();
+        String nameOfTrip = values.getTripName();
+        String start = values.getStartPosition();
+        String end = values.getDestination();
+        String date = values.getDate();
+        String time = values.getTime();   ////// USE SH ON THESE VARIABLES
+        String tripType = values.getTripType();
+        id = values.getId();
+        trackerInformation.setTripName(nameOfTrip);
+        trackerInformation.setStartPosition(start);
+        trackerInformation.setDestination(end);
+        trackerInformation.setDate(date);
+        trackerInformation.setTime(time);
+        trackerInformation.setId(id);
+        trackerInformation.setTripType(tripType);
+       // trackerInformation.setTripNotes(noteClass);
+      //  Log.i("trace",trackerInformation.getTripNotes().toString());
     }
 
     @Override
@@ -141,7 +151,8 @@ public class MainActivity extends AppCompatActivity
         trackerInformationList = new ArrayList<>();
     }
 
-    private void androidStaff(Toolbar toolbar) {
+    private void androidStaff(Toolbar toolbar)
+    {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -153,7 +164,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed()
+    {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -168,10 +180,12 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.history) {
+        if (id == R.id.history)
+        {
+            startActivity(new Intent(MainActivity.this, History.class));
 
-
-        } else if (id == R.id.logOut) {
+        }
+        else if (id == R.id.logOut) {
 
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

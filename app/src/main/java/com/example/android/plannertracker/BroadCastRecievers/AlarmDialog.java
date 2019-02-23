@@ -15,21 +15,18 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.example.android.plannertracker.NewPlan;
 import com.example.android.plannertracker.R;
-import com.example.android.plannertracker.TripDetails.TrackerInformation;
 
 import java.util.Locale;
 
 public class AlarmDialog extends AppCompatActivity {
-    public static final String PREFS_NAME ="MyPrefsFile";
     public static final int NOTIFICATION_ALARM = 1;
     Ringtone ringtone;
+    public static final String PREFS_NAME ="MyPrefsFile";
     boolean flag = false;
-    //TrackerInformation trackerInformation = new TrackerInformation();
 
 
     @Override
@@ -60,8 +57,8 @@ public class AlarmDialog extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         ringtone.stop();
                         Toast.makeText(AlarmDialog.this, "Starting", Toast.LENGTH_SHORT).show();
-                        startMap();
-                       // finish();
+                        openMap();
+                        finish();
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -82,17 +79,10 @@ public class AlarmDialog extends AppCompatActivity {
         }).create().show();
     }
 
-    private void startMap()
-    {
-
-       // String start = trackerInformation.getStartPosition();
-       // String end = trackerInformation.getDestination();
-
-    //    Log.v("testloc",start+" "+end);
+    private void openMap() {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME , 0);
-         String startPoint=(settings.getString("start",null));
+        String startPoint=(settings.getString("start",null));
         String endPoint=(settings.getString("end",null));
-
 
 
         String uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?saddr="+startPoint+"&daddr="+endPoint);
@@ -101,6 +91,7 @@ public class AlarmDialog extends AppCompatActivity {
         intent.setPackage("com.google.android.apps.maps");
         startActivity(intent);
     }
+
     private void sendNotification() {
 
         PendingIntent again = PendingIntent.getActivity(this,0,
