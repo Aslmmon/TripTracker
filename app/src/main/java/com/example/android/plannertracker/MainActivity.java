@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,22 +27,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     public static final String TRIP_DATA = "Trip Data";
     String id;
-
-
     DatabaseReference databaseReference;
     RecyclerView recyclerView;
     TrackerInformation trackerInformation;
-    NoteClass noteClass;
+    DividerItemDecoration dividerItemDecoration;
+    RecyclerView.LayoutManager layoutManager;
     ArrayList<TrackerInformation> trackerInformationList;
-    boolean flagRound;
-    List<String> notesList;
 
     @Override
     protected void onStart() {
@@ -55,26 +53,11 @@ public class MainActivity extends AppCompatActivity
                 trackerInformationList.clear();
                 for (DataSnapshot trackInfo : dataSnapshot.getChildren()) {
                     getTrackDetails(trackInfo);
-//                    for (DataSnapshot notesInfo : trackInfo.child("note").getChildren()){
-//                        //Log.i("trace",notesInfo.getKey());
-//                        //Log.i("trace",notesInfo.getValue().toString());
-//                        NoteClass note = notesInfo.getValue(NoteClass.class);
-//                        //Log.i("trace",note.toString());
-//                       // id = note.getId();
-//                        String myNote = note.getMyNotes();
-//                        //Log.i("trace 2: ",myNote);
-//                        noteClass = new NoteClass(id, myNote);
-//                        noteClass.setMyNotes(myNote);
-//                        //Log.i("trace 1 : ",noteClass.toString());
-//                        //trackerInformation.setTripNotes(noteClass);
-//                        //Log.i("trace",trackerInformation.getTripNotes().getMyNotes());
-//                    }
-//                    trackerInformation.setTripNotes(noteClass);
                     trackerInformationList.add(trackerInformation);
-
                 }
                 recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
                 recyclerView.setAdapter(new ArrayAdapter(MainActivity.this, trackerInformationList));
+                recyclerView.addItemDecoration(dividerItemDecoration);
             }
 
             @Override
@@ -85,26 +68,8 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void addNoteData(DataSnapshot trackInfo) {
-        NoteClass noteValues = trackInfo.child("note").child("myNotes").getValue(NoteClass.class);
-        String key = trackInfo.child("note").getKey();
-        String notes = trackInfo.child("note").getValue().toString();
-        Log.i("trace", "onDataChange: " + noteValues);
-        Log.i("trace", " key : " + key);
-        Log.i("trace", " noteNeedeeeeeed : " + notes);
-        noteClass = new NoteClass(id, notes);
-        String NoteAdded = noteValues.getMyNotes();
-
-        String id = noteValues.getId();
-        Log.i("trace", "onDataChange: " + NoteAdded);
-        Log.i("trace", "onDataChange: " + id);
-        noteClass.setId(id);
-        noteClass.setMyNotes(NoteAdded);
-    }
 
     private void getTrackDetails(DataSnapshot trackInfo) {
-//        Log.i("trace",trackInfo.getKey());
-//        Log.i("trace",trackInfo.getValue().toString());
         TrackerInformation values = trackInfo.getValue(TrackerInformation.class);
         trackerInformation = new TrackerInformation();
         String nameOfTrip = values.getTripName();
@@ -121,8 +86,6 @@ public class MainActivity extends AppCompatActivity
         trackerInformation.setTime(time);
         trackerInformation.setId(id);
         trackerInformation.setTripType(tripType);
-       // trackerInformation.setTripNotes(noteClass);
-      //  Log.i("trace",trackerInformation.getTripNotes().toString());
     }
 
     @Override
@@ -144,8 +107,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void intialize() {
-        notesList = new ArrayList<>();
         recyclerView = findViewById(R.id.recycler);
+        dividerItemDecoration = new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL);
         trackerInformationList = new ArrayList<>();
     }
 

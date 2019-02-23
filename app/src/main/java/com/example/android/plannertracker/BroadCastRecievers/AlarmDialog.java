@@ -76,7 +76,7 @@ public class AlarmDialog extends AppCompatActivity {
                 ringtone.stop();
                 Toast.makeText(AlarmDialog.this, "sending Notification", Toast.LENGTH_SHORT).show();
                 sendNotification();
-               // finish();
+                finish();
             }
         }).create().show();
     }
@@ -95,6 +95,8 @@ public class AlarmDialog extends AppCompatActivity {
     }
 
     private void sendNotification() {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME , 0);
+        String tripName = settings.getString("tripName","No trip");
 
         PendingIntent again = PendingIntent.getActivity(this,0,
                 new Intent(this,AlarmDialog.class),PendingIntent.FLAG_UPDATE_CURRENT);
@@ -103,9 +105,9 @@ public class AlarmDialog extends AppCompatActivity {
         builder.setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_SOUND)
                 .setSmallIcon(R.drawable.map)
-                .setContentTitle("Your trip")
+                .setContentTitle("Your trip " + tripName)
                 .setContentText("Check out your Trip")
-                .setContentInfo("info")
+                .setContentInfo("will Start soon ")
                 .setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_ALL | Notification.DEFAULT_SOUND)
                 .setContentIntent(again);
 

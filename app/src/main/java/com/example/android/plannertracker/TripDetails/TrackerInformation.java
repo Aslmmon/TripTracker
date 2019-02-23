@@ -45,16 +45,13 @@ public class TrackerInformation {
 
 
     public TrackerInformation(String id, String startPosition, String destination,
-                              String tripName, String time, String date,
-                              String tripType,NoteClass notes) {
+                              String tripName, String time, String date) {
         this.id = id;
         this.StartPosition = startPosition;
         this.destination = destination;
         TripName = tripName;
         this.time = time;
         this.date = date;
-        this.tripType = tripType;
-        this.notes = notes;
     }
 
 

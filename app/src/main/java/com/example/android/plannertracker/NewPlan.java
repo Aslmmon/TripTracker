@@ -12,13 +12,17 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -30,7 +34,6 @@ import com.example.android.plannertracker.BroadCastRecievers.AlarmReciever;
 import com.example.android.plannertracker.BroadCastRecievers.NotificationReciever;
 import com.example.android.plannertracker.SqltieDatabase.DbContract;
 import com.example.android.plannertracker.SqltieDatabase.DbHelper;
-import com.example.android.plannertracker.TripDetails.NoteClass;
 import com.example.android.plannertracker.TripDetails.TrackerInformation;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -45,25 +48,29 @@ public class NewPlan extends AppCompatActivity {
     private static final int AUTOCOMPLETE_REQUEST_CODE = 2;
     private static final String token = "sk.eyJ1IjoibWlsa3lyYW5nZXIiLCJhIjoiY2pzOTBzOXlxMTZ6ZDN6czhiNTJjY2JrdCJ9.TVE3NN-juPXRMYr14hRBFA";
     public static final String PREFS_NAME ="MyPrefsFile";
-    Calendar c;
+    Calendar c,calendarRound;
     String TripType, TripName, start, destination, time, date;
+    LinearLayout roundChooserDate,roundChooserTime;
     SQLiteDatabase sqLiteDatabase;
-    TimePickerDialog mTimePicker;
-    DatePickerDialog datePickerDialog;
+    TimePickerDialog mTimePicker,mTimePickerRound;
+    DatePickerDialog datePickerDialog,mDatePickerRound;
     RadioGroup radioGroup;
-    RadioButton radioButton;
+    RadioButton radioButton,mround,msingle;
     int hour, minute, mYear, mMonth, mDay;
+    int roundHour,roundMinute,roundYear,roundMonth,roundDAy;
     EditText startPosition, endPosition, tripName;
     DatabaseReference databaseReference;
     Button dateBtn, timeBtn, save;
-    TextView dateText, timeText;
-    NoteClass noteClass;
+    TextView dateText, timeText ,roundDateText,roundTimeText;
+    ImageView roundDateIcon,roundTimeIcon;
+    TextInputEditText editTextTripRound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_plan);
         c = Calendar.getInstance();
+        calendarRound = Calendar.getInstance();
         initialize();
         startPosition.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,11 +98,33 @@ public class NewPlan extends AppCompatActivity {
                 chooseTime();
             }
         });
+        roundDateIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chooseRoundDate();
+            }
+        });
+        roundTimeIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chooseRoundTime();
+            }
+        });
+        mround.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                setVisibilty(b);
+            }
+        });
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saveToDatabase();
                 setAlarm(false);
+                if (mround.isChecked()) {
+                    saveRoundTripToDatabase();
+                    setAlarmRoundTrip(false);
+                }
 
                 finish();
             }
@@ -103,6 +132,88 @@ public class NewPlan extends AppCompatActivity {
 
     }
 
+    private void setAlarmRoundTrip(boolean isNotification) {
+
+        AlarmManager manager = (AlarmManager) getSystemService(this.ALARM_SERVICE);
+        Intent intent;
+        PendingIntent pendingIntent;
+        if (isNotification) {
+            intent = new Intent(this, NotificationReciever.class);
+            pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
+        } else {
+            intent = new Intent(this, AlarmReciever.class);
+            pendingIntent = PendingIntent.getBroadcast(this, 3, intent, 0);
+
+        }
+
+        calendarRound.set(roundYear, roundMonth, roundDAy, roundHour, roundMinute, 0);
+        manager.set(AlarmManager.RTC_WAKEUP, calendarRound.getTimeInMillis(),
+                pendingIntent);
+
+        Log.i("timeSaveRound", String.valueOf(calendarRound));
+        Log.i("timeSaveRound", String.valueOf(calendarRound.getTimeInMillis()));
+        Log.i("timeSaveRound", String.valueOf(calendarRound.getTimeZone()));
+        Log.i("timeSaveRound", String.valueOf(calendarRound.getTime()));
+    }
+
+
+    private void setVisibilty(boolean b) {
+        if (b){
+            roundChooserDate.setVisibility(View.VISIBLE);
+            roundChooserTime.setVisibility(View.VISIBLE);
+            editTextTripRound.setVisibility(View.VISIBLE);
+        }else{
+            roundChooserDate.setVisibility(View.GONE);
+            roundChooserTime.setVisibility(View.GONE);
+            editTextTripRound.setVisibility(View.GONE);
+        }
+    }
+
+    private void chooseRoundDate() {
+        roundYear = calendarRound.get(Calendar.YEAR); // current year
+        roundMonth = calendarRound.get(Calendar.MONTH); // current month
+        roundDAy = calendarRound.get(Calendar.DAY_OF_MONTH); // current day
+        mDatePickerRound = new DatePickerDialog(NewPlan.this, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                roundYear = year;
+                roundMonth= month;
+                roundDAy = day;
+                roundDateText.setText(day + "/" + (month + 1) + "/" + year);
+            }
+        }, roundYear, roundMonth, roundDAy);
+        mDatePickerRound.show();
+
+    }
+
+    private void chooseRoundTime() {
+        roundHour= calendarRound.get(Calendar.HOUR_OF_DAY);
+        roundMinute = calendarRound.get(Calendar.MINUTE);
+        mTimePickerRound = new TimePickerDialog(NewPlan.this, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                String status = "AM";
+                roundHour= selectedHour;
+                roundMinute = selectedMinute;
+                if (selectedHour > 11) {
+                    // If the hour is greater than or equal to 12
+                    // Then the current AM PM status is PM
+                    status = "PM";
+                }
+                int hour_of_12_hour_format;
+
+                if (selectedHour > 11) {
+                    hour_of_12_hour_format = selectedHour - 12;
+                } else {
+                    hour_of_12_hour_format = selectedHour;
+                }
+
+                roundTimeText.setText(hour_of_12_hour_format + " : " + selectedMinute + " :" + status);
+            }
+        }, roundHour, roundMinute, false);//Yes 24 hour time
+        mTimePickerRound.setTitle("Select Time");
+        mTimePickerRound.show();
+    }
 
 
     private void saveTointernal() {
@@ -195,13 +306,26 @@ public class NewPlan extends AppCompatActivity {
         }).create().show();
     }
 
-    private void saveToDatabase() {
+    private void saveRoundTripToDatabase() {
+        String roundTripName = editTextTripRound.getText().toString();
+        String roundDate = roundDateText.getText().toString();
+        String roundTime = roundTimeText.getText().toString();
+        String startRoundTrip = endPosition.getText().toString();
+        String destinationRoundTrip = startPosition.getText().toString();
 
-        int radioId = radioGroup.getCheckedRadioButtonId();
-        radioButton = findViewById(radioId);
+        String ID = databaseReference.push().getKey();
+        TrackerInformation roundTracks = new TrackerInformation(ID,destination,start,
+                roundTripName,roundTime,roundDate,"Single");
+        databaseReference.child(ID).setValue(roundTracks);
+        Toast.makeText(this, "Done added Round trip", Toast.LENGTH_SHORT).show();
+        editTextTripRound.setText("");
+        roundDateText.setText("");
+        roundTimeText.setText("");
+
+    }
+
+    private void saveToDatabase() {
         Log.i("trace", radioButton.getText().toString());
-        String Note = " ";
-//        noteClass.setMyNotes(Note);
         TripType = radioButton.getText().toString();
         TripName = tripName.getText().toString();
         start = startPosition.getText().toString();
@@ -217,14 +341,16 @@ public class NewPlan extends AppCompatActivity {
                     destination, TripName, time, date, TripType );
             databaseReference.child(id).setValue(trackerInformation);
             Toast.makeText(this, "Done Added", Toast.LENGTH_SHORT).show();
-            tripName.setText("");
-            startPosition.setText("");
-            endPosition.setText("");
-            dateText.setText("");
-            timeText.setText("");
+//            tripName.setText("");
+//            startPosition.setText("");
+//            endPosition.setText("");
+//            dateText.setText("");
+//            timeText.setText("");
         } else {
             Toast.makeText(this, "Enter Valid bodies", Toast.LENGTH_SHORT).show();
+            return;
         }
+
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME , 0);
         SharedPreferences.Editor editor = settings.edit();
@@ -279,6 +405,14 @@ public class NewPlan extends AppCompatActivity {
     }
 
     private void initialize() {
+        editTextTripRound = findViewById(R.id.roundTripName);
+        roundChooserDate = findViewById(R.id.RoundChooserDate);
+        roundChooserTime = findViewById(R.id.RoundChooserTime);
+        roundDateIcon = findViewById(R.id.roundDateImage);
+        roundTimeIcon = findViewById(R.id.roundTimeImage);
+        roundDateText = findViewById(R.id.roundDate);
+        roundTimeText = findViewById(R.id.roundTime);
+        mround = findViewById(R.id.roundBtn);
 
         radioGroup = findViewById(R.id.radioGrp);
         tripName = findViewById(R.id.TripNameNew);
@@ -289,7 +423,8 @@ public class NewPlan extends AppCompatActivity {
         timeBtn = findViewById(R.id.chooseTime);
         timeText = findViewById(R.id.timeText);
         dateText = findViewById(R.id.dateText);
-
+        int radioId = radioGroup.getCheckedRadioButtonId();
+        radioButton = findViewById(radioId);
         databaseReference = FirebaseDatabase.getInstance().getReference("Trip Data");
     }
 
@@ -309,9 +444,9 @@ public class NewPlan extends AppCompatActivity {
         c.set(mYear, mMonth, mDay, hour, minute, 0);
         manager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(),
                 pendingIntent);
-        Log.i("time Save", String.valueOf(c));
-        Log.i("time Save", String.valueOf(c.getTimeInMillis()));
-        Log.i("time Save", String.valueOf(c.getTimeZone()));
-        Log.i("time Save", String.valueOf(c.getTime()));
+        Log.i("timeSave", String.valueOf(c));
+        Log.i("timeSave", String.valueOf(c.getTimeInMillis()));
+        Log.i("timeSave", String.valueOf(c.getTimeZone()));
+        Log.i("timeSave", String.valueOf(c.getTime()));
     }
 }

@@ -15,7 +15,6 @@ public class AlarmReciever extends BroadcastReceiver {
         Intent goToAlarmDialogClass = new Intent(context,AlarmDialog.class);
         goToAlarmDialogClass.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(goToAlarmDialogClass);
-
         Toast.makeText(context, "This is alarm", Toast.LENGTH_SHORT).show();
 
     }
