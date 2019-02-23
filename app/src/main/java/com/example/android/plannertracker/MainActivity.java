@@ -184,6 +184,7 @@ public class MainActivity extends AppCompatActivity
         {
             startActivity(new Intent(MainActivity.this, History.class));
 
+
         }
         else if (id == R.id.logOut) {
 

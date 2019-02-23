@@ -42,7 +42,17 @@
                 android:hint="@string/trip_name"
                 android:textColor="@color/white"
                 android:textSize="28sp"
-                android:textStyle="italic" />
+                android:textStyle="italic"
+                android:layout_marginRight="80dp"
+                />
+
+            <ImageView
+                android:id="@+id/mapIconID"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+
+
+                android:src="@drawable/mapicon" />
 
         </LinearLayout>
 

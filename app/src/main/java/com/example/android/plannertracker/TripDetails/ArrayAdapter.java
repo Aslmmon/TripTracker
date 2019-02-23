@@ -31,24 +31,22 @@ import java.util.Locale;
 public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder> {
     public static final String CLICKED_ITEM_POSITION = "ClickedItemPoisiton";
 
-    public static final String PREFS_NAME ="MyPrefsFile";
+    public static final String PREFS_NAME = "MyPrefsFile";
     private Context context;
     private ArrayList<TrackerInformation> trackerInformations;
     private List<String> notes;
     NoteClass noteClass;
     TrackerInformation trackerInformation;
-    DatabaseReference databaseReference , databaseReferenceTwo;
+    DatabaseReference databaseReference, databaseReferenceTwo;
 
-    public ArrayAdapter(Context context, ArrayList<TrackerInformation> trackerInformations)
-    {
+    public ArrayAdapter(Context context, ArrayList<TrackerInformation> trackerInformations) {
         this.context = context;
         this.trackerInformations = trackerInformations;
     }
 
     @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-    {
+    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).
                 inflate(R.layout.my_list_home, parent, false);
 
@@ -77,7 +75,6 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
                 showDialogForHistory(positionOfItem);
 
 
-
             }
         });
 
@@ -92,27 +89,26 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
             }
         });
     }
-   public void saveToFinishedDatabase(int position)
-   {
-       String id = databaseReferenceTwo.push().getKey();
-       HistoryList historyList = new HistoryList(trackerInformations.get(position).getStartPosition(),trackerInformations.get(position).getDestination(),trackerInformations.get(position).getTripName()) ;
-       databaseReferenceTwo.child(id).setValue(historyList);
-   }
 
-    public void moveToHistory(int position)
-    {
+    public void saveToFinishedDatabase(int position) {
+        String id = databaseReferenceTwo.push().getKey();
+        Log.v("xxxx",id);
+////// garab al3b hna
 
-        HistoryList historyList = new HistoryList(trackerInformations.get(position).getStartPosition(),trackerInformations.get(position).getDestination(),trackerInformations.get(position).getTripName()) ;
-        Toast.makeText(context,trackerInformations.get(position).getStartPosition() , Toast.LENGTH_SHORT).show();
+        HistoryList historyList = new HistoryList(trackerInformations.get(position).getTripName(), trackerInformations.get(position).getStartPosition(), trackerInformations.get(position).getDestination(), trackerInformations.get(position).getId());
+        databaseReferenceTwo.child(id).setValue(historyList);
+    }
 
+    public void moveToHistory(int position) {
+
+        HistoryList historyList = new HistoryList(trackerInformations.get(position).getTripName(), trackerInformations.get(position).getStartPosition(), trackerInformations.get(position).getDestination(), trackerInformations.get(position).getId());
+        Toast.makeText(context, trackerInformations.get(position).getStartPosition(), Toast.LENGTH_SHORT).show();
 
 
     }
 
 
-
-    private void addPopUp(@NonNull final MyViewHolder holder)
-    {
+    private void addPopUp(@NonNull final MyViewHolder holder) {
         PopupMenu popupMenu = new PopupMenu(context, holder.buttonView);
         popupMenu.inflate(R.menu.item_lists);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -147,8 +143,7 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
         popupMenu.show();
     }
 
-    private void goToAddNoteActivity(int adapterPosition)
-    {
+    private void goToAddNoteActivity(int adapterPosition) {
         Intent intent = new Intent(context, AddNote.class);
         intent.putExtra("id", trackerInformations.get(adapterPosition).getId());
         context.startActivity(intent);
@@ -170,12 +165,12 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
 
     private void showDialogForHistory(final int adapterpostion) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 databaseReferenceTwo = FirebaseDatabase.getInstance().getReference("Trip History");
                 saveToFinishedDatabase(adapterpostion);
-                moveToHistory(adapterpostion);
+                // moveToHistory(adapterpostion);
                 removeItem(adapterpostion);
             }
         }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -183,8 +178,9 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
             public void onClick(DialogInterface dialogInterface, int i) {
                 Toast.makeText(context, "cancel", Toast.LENGTH_SHORT).show();
             }
-        }).setTitle("Remove item").setMessage("Are you sure ? ").create().show();
+        }).setTitle("Finished Trip").setMessage("Have you finished this trip ? ").create().show();
     }
+
     private void showDialog(final int adapterpostion) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
@@ -217,10 +213,10 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
     }
 
     private void removeItem(int adapterPosition) {
-        // trackerInformation = new TrackerInformation(trackerInformation.getId());
+
         String id = trackerInformations.get(adapterPosition).getId();
         databaseReference = FirebaseDatabase.getInstance().getReference("Trip Data");
-        //  String id = trackerInformation.getId();
+
         Log.i("trace", "removeItem: " + id);
         databaseReference.child(id).removeValue();
         trackerInformations.remove(adapterPosition);
@@ -228,11 +224,12 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
         notifyItemRangeChanged(adapterPosition, trackerInformations.size());
         Toast.makeText(context, "Removed Successfully", Toast.LENGTH_SHORT).show();
     }
+
     private void startMap() {
         String start = trackerInformation.getStartPosition();
         String end = trackerInformation.getDestination();
-        Log.v("testloc",start+" "+end);
-        String uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?saddr="+start+"&daddr="+end);
+        Log.v("testloc", start + " " + end);
+        String uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?saddr=" + start + "&daddr=" + end);
 
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
         intent.setPackage("com.google.android.apps.maps");

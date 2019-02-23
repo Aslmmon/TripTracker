@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.example.android.plannertracker.MainActivity;
 import com.example.android.plannertracker.R;
@@ -23,6 +24,7 @@ public class History extends AppCompatActivity {
     ArrayList<HistoryList> historyLists;
     HistoryList historyList;
     DatabaseReference databaseReference;
+    ImageView mapImageView;
 
 
     @Override
@@ -35,13 +37,14 @@ public class History extends AppCompatActivity {
     public void initialize() {
         recyclerView = findViewById(R.id.recycler);
         historyLists = new ArrayList<>();
+        mapImageView = findViewById(R.id.mapIconID);
     }
 
     @Override
     public void onStart() {
         super.onStart();
         databaseReference = FirebaseDatabase.getInstance().getReference("Trip History");
-
+        Log.i("trace", "INSIDE ON START");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -57,6 +60,7 @@ public class History extends AppCompatActivity {
                 recyclerView.setAdapter(new HistoryRecyclerAdapter(History.this, historyLists));
 
 
+
             }
 
             @Override
@@ -67,8 +71,7 @@ public class History extends AppCompatActivity {
 
     }
 
-    private void getTrackDetails(DataSnapshot trackInfo)
-    {
+    private void getTrackDetails(DataSnapshot trackInfo) {
         //    getTrackDetails(trackInfo);
 
         HistoryList values = trackInfo.getValue(HistoryList.class);
@@ -76,12 +79,14 @@ public class History extends AppCompatActivity {
         String tripName = values.getTripName();
         String start = values.getStartPlace();
         String end = values.getEndPlace();
-         historyList.setTripName(tripName);
-         historyList.setStartPlace(start);
-         historyList.setEndPlace(end);
-         Log.v("hello",tripName);
-        Log.v("helloo",start);
-        Log.v("hellooo",end);
+        String id = databaseReference.push().getKey();
+        historyList.setTripName(tripName);
+        historyList.setStartPlace(start);
+        historyList.setEndPlace(end);
+        historyList.setId(id);
+        Log.v("hello", tripName);
+        Log.v("helloo", start);
+        Log.v("hellooo", end);
 
 
     }
