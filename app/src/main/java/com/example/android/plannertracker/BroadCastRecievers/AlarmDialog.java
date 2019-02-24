@@ -33,7 +33,6 @@ public class AlarmDialog extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         if (!flag) {
             playSound();
         }

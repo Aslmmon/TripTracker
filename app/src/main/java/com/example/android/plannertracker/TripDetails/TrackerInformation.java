@@ -13,6 +13,14 @@ public class TrackerInformation {
         this.tripTypeView = tripTypeView;
     }
 
+    public int getAlarmID() {
+        return AlarmID;
+    }
+
+    public void setAlarmID(int alarmID) {
+        AlarmID = alarmID;
+    }
+
     public enum TripTypeView {
         SINGLE_TRIP,ROUND_TRIP ;
     }
@@ -25,6 +33,7 @@ public class TrackerInformation {
     private String date;
     private String tripType;
     private NoteClass notes;
+    private int AlarmID;
     //private Map<String,NoteClass> notes;
 
 
@@ -45,13 +54,14 @@ public class TrackerInformation {
 
 
     public TrackerInformation(String id, String startPosition, String destination,
-                              String tripName, String time, String date) {
+                              String tripName, String time, String date , int AlarmID) {
         this.id = id;
         this.StartPosition = startPosition;
         this.destination = destination;
         TripName = tripName;
         this.time = time;
         this.date = date;
+        this.AlarmID = AlarmID;
     }
 
 

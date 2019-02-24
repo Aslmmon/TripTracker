@@ -36,6 +36,7 @@ public class EditActtivity extends AppCompatActivity {
     Button date, time, update;
     TextView dateText, timeText;
     int hour, minute, mYear, mMonth, mDay;
+    int x;
     TimePickerDialog mTimePicker;
     DatePickerDialog datePickerDialog;
     TrackerInformation trackerInformation;
@@ -188,12 +189,13 @@ public class EditActtivity extends AppCompatActivity {
         AlarmManager manager = (AlarmManager) getSystemService(this.ALARM_SERVICE);
         Intent intent;
         PendingIntent pendingIntent;
+        int x = (int) System.currentTimeMillis();
         if (isNotification) {
             intent = new Intent(this, NotificationReciever.class);
             pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
         } else {
             intent = new Intent(this, AlarmReciever.class);
-            pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+            pendingIntent = PendingIntent.getBroadcast(this, x, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         }
 

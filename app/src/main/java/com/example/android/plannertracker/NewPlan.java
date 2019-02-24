@@ -46,29 +46,32 @@ import java.util.Calendar;
 
 public class NewPlan extends AppCompatActivity {
     private static final int AUTOCOMPLETE_REQUEST_CODE = 2;
+    public  int ALARM_TRIP_REQUEST = 0;
     private static final String token = "sk.eyJ1IjoibWlsa3lyYW5nZXIiLCJhIjoiY2pzOTBzOXlxMTZ6ZDN6czhiNTJjY2JrdCJ9.TVE3NN-juPXRMYr14hRBFA";
-    public static final String PREFS_NAME ="MyPrefsFile";
-    Calendar c,calendarRound;
+    public static final String PREFS_NAME = "MyPrefsFile";
+    Calendar c, calendarRound;
     String TripType, TripName, start, destination, time, date;
-    LinearLayout roundChooserDate,roundChooserTime;
+    LinearLayout roundChooserDate, roundChooserTime;
     SQLiteDatabase sqLiteDatabase;
-    TimePickerDialog mTimePicker,mTimePickerRound;
-    DatePickerDialog datePickerDialog,mDatePickerRound;
+    TimePickerDialog mTimePicker, mTimePickerRound;
+    DatePickerDialog datePickerDialog, mDatePickerRound;
     RadioGroup radioGroup;
-    RadioButton radioButton,mround,msingle;
+    RadioButton radioButton, mround, msingle;
     int hour, minute, mYear, mMonth, mDay;
-    int roundHour,roundMinute,roundYear,roundMonth,roundDAy;
+    int roundHour, roundMinute, roundYear, roundMonth, roundDAy;
     EditText startPosition, endPosition, tripName;
     DatabaseReference databaseReference;
     Button dateBtn, timeBtn, save;
-    TextView dateText, timeText ,roundDateText,roundTimeText;
-    ImageView roundDateIcon,roundTimeIcon;
+    TextView dateText, timeText, roundDateText, roundTimeText;
+    ImageView roundDateIcon, roundTimeIcon;
     TextInputEditText editTextTripRound;
+    int x,y;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_plan);
+        ALARM_TRIP_REQUEST++;
         c = Calendar.getInstance();
         calendarRound = Calendar.getInstance();
         initialize();
@@ -114,16 +117,20 @@ public class NewPlan extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 setVisibilty(b);
+
             }
         });
+
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saveToDatabase();
                 setAlarm(false);
+                Log.i("Alarm", String.valueOf(x));
                 if (mround.isChecked()) {
                     saveRoundTripToDatabase();
                     setAlarmRoundTrip(false);
+                    Log.i("Alarm2", String.valueOf(y));
                 }
 
                 finish();
@@ -137,12 +144,13 @@ public class NewPlan extends AppCompatActivity {
         AlarmManager manager = (AlarmManager) getSystemService(this.ALARM_SERVICE);
         Intent intent;
         PendingIntent pendingIntent;
+        y = (int) System.currentTimeMillis();
         if (isNotification) {
             intent = new Intent(this, NotificationReciever.class);
             pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
         } else {
             intent = new Intent(this, AlarmReciever.class);
-            pendingIntent = PendingIntent.getBroadcast(this, 3, intent, 0);
+            pendingIntent = PendingIntent.getBroadcast(this, y, intent, 0);
 
         }
 
@@ -158,11 +166,11 @@ public class NewPlan extends AppCompatActivity {
 
 
     private void setVisibilty(boolean b) {
-        if (b){
+        if (b) {
             roundChooserDate.setVisibility(View.VISIBLE);
             roundChooserTime.setVisibility(View.VISIBLE);
             editTextTripRound.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             roundChooserDate.setVisibility(View.GONE);
             roundChooserTime.setVisibility(View.GONE);
             editTextTripRound.setVisibility(View.GONE);
@@ -177,7 +185,7 @@ public class NewPlan extends AppCompatActivity {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 roundYear = year;
-                roundMonth= month;
+                roundMonth = month;
                 roundDAy = day;
                 roundDateText.setText(day + "/" + (month + 1) + "/" + year);
             }
@@ -187,13 +195,13 @@ public class NewPlan extends AppCompatActivity {
     }
 
     private void chooseRoundTime() {
-        roundHour= calendarRound.get(Calendar.HOUR_OF_DAY);
+        roundHour = calendarRound.get(Calendar.HOUR_OF_DAY);
         roundMinute = calendarRound.get(Calendar.MINUTE);
         mTimePickerRound = new TimePickerDialog(NewPlan.this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                 String status = "AM";
-                roundHour= selectedHour;
+                roundHour = selectedHour;
                 roundMinute = selectedMinute;
                 if (selectedHour > 11) {
                     // If the hour is greater than or equal to 12
@@ -214,7 +222,6 @@ public class NewPlan extends AppCompatActivity {
         mTimePickerRound.setTitle("Select Time");
         mTimePickerRound.show();
     }
-
 
     private void saveTointernal() {
         DbHelper dbHelper = new DbHelper(getBaseContext());
@@ -260,10 +267,10 @@ public class NewPlan extends AppCompatActivity {
             start = feature.text();
             startPosition.setText(start);
             // adding shared pref
-            SharedPreferences settings = getSharedPreferences(PREFS_NAME , 0);
+            SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
             String startP = feature.text();
             SharedPreferences.Editor editor = settings.edit();
-            editor.putString("start",startP);
+            editor.putString("start", startP);
             editor.commit();
 
 
@@ -273,38 +280,16 @@ public class NewPlan extends AppCompatActivity {
             destination = feature.text();
             endPosition.setText(destination);
             // adding shared pref
-            SharedPreferences settings = getSharedPreferences(PREFS_NAME , 0);
+            SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
             String endP = feature.text();
             SharedPreferences.Editor editor = settings.edit();
-            editor.putString("end",endP);
+            editor.putString("end", endP);
             editor.commit();
 
 
         }
     }
 
-
-    private void showAlarmDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Reminder To your Trip")
-                .setMessage("Yout Trip is : ")
-                .setPositiveButton("Ok Start", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Toast.makeText(NewPlan.this, "Starting", Toast.LENGTH_SHORT).show();
-                    }
-                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-
-            }
-        }).setNeutralButton("later", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Toast.makeText(NewPlan.this, "sending Notification", Toast.LENGTH_SHORT).show();
-            }
-        }).create().show();
-    }
 
     private void saveRoundTripToDatabase() {
         String roundTripName = editTextTripRound.getText().toString();
@@ -314,8 +299,8 @@ public class NewPlan extends AppCompatActivity {
         String destinationRoundTrip = startPosition.getText().toString();
 
         String ID = databaseReference.push().getKey();
-        TrackerInformation roundTracks = new TrackerInformation(ID,destination,start,
-                roundTripName,roundTime,roundDate,"Single");
+        TrackerInformation roundTracks = new TrackerInformation(ID, destination, start,
+                roundTripName, roundTime, roundDate, "Single");
         databaseReference.child(ID).setValue(roundTracks);
         Toast.makeText(this, "Done added Round trip", Toast.LENGTH_SHORT).show();
         editTextTripRound.setText("");
@@ -338,24 +323,20 @@ public class NewPlan extends AppCompatActivity {
                 && !TextUtils.isEmpty(TripType)) {
             String id = databaseReference.push().getKey();
             TrackerInformation trackerInformation = new TrackerInformation(id, start,
-                    destination, TripName, time, date, TripType );
+                    destination, TripName, time, date, TripType);
             databaseReference.child(id).setValue(trackerInformation);
             Toast.makeText(this, "Done Added", Toast.LENGTH_SHORT).show();
-//            tripName.setText("");
-//            startPosition.setText("");
-//            endPosition.setText("");
-//            dateText.setText("");
-//            timeText.setText("");
+
         } else {
             Toast.makeText(this, "Enter Valid bodies", Toast.LENGTH_SHORT).show();
             return;
         }
 
 
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME , 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString("tripName",TripName);
-        editor.commit();
+//        SharedPreferences settings = getSharedPreferences(PREFS_NAME , 0);
+//        SharedPreferences.Editor editor = settings.edit();
+//        editor.putString("tripName",TripName);
+//        editor.commit();
     }
 
     private void chooseTime() {
@@ -432,12 +413,14 @@ public class NewPlan extends AppCompatActivity {
         AlarmManager manager = (AlarmManager) getSystemService(this.ALARM_SERVICE);
         Intent intent;
         PendingIntent pendingIntent;
+        x = (int) System.currentTimeMillis();
+
         if (isNotification) {
             intent = new Intent(this, NotificationReciever.class);
             pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
         } else {
             intent = new Intent(this, AlarmReciever.class);
-            pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+            pendingIntent = PendingIntent.getBroadcast(this, x, intent, 0);
 
         }
 
