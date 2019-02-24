@@ -93,9 +93,9 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
     public void saveToFinishedDatabase(int position) {
         String id = databaseReferenceTwo.push().getKey();
         Log.v("xxxx",id);
-////// garab al3b hna
 
-        HistoryList historyList = new HistoryList(trackerInformations.get(position).getTripName(), trackerInformations.get(position).getStartPosition(), trackerInformations.get(position).getDestination(), trackerInformations.get(position).getId());
+
+        HistoryList historyList = new HistoryList(trackerInformations.get(position).getTripName(), trackerInformations.get(position).getStartPosition(), trackerInformations.get(position).getDestination(), id);
         databaseReferenceTwo.child(id).setValue(historyList);
     }
 

@@ -24,8 +24,9 @@ public class History extends AppCompatActivity {
     ArrayList<HistoryList> historyLists;
     HistoryList historyList;
     DatabaseReference databaseReference;
-    ImageView mapImageView;
 
+
+ ///////////////////   private String googleKey = "AIzaSyB1dNGFSH9xcmE_BxH6uyEppsKLsBklNBQ ";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,7 +38,7 @@ public class History extends AppCompatActivity {
     public void initialize() {
         recyclerView = findViewById(R.id.recycler);
         historyLists = new ArrayList<>();
-        mapImageView = findViewById(R.id.mapIconID);
+
     }
 
     @Override
@@ -79,11 +80,14 @@ public class History extends AppCompatActivity {
         String tripName = values.getTripName();
         String start = values.getStartPlace();
         String end = values.getEndPlace();
-        String id = databaseReference.push().getKey();
+        String id = values.getId(); /// newly added
+        Log.v("zzzzz", id);
+
         historyList.setTripName(tripName);
         historyList.setStartPlace(start);
         historyList.setEndPlace(end);
         historyList.setId(id);
+
         Log.v("hello", tripName);
         Log.v("helloo", start);
         Log.v("hellooo", end);

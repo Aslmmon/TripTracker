@@ -3,6 +3,7 @@ package com.example.android.plannertracker.TripDetails;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -12,12 +13,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.plannertracker.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +35,6 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
     DatabaseReference databaseReference;
     private Context context;
 
-    public HistoryRecyclerAdapter() {
-    }
 
     HistoryRecyclerAdapter(Context context, ArrayList<HistoryList> historyLists) {
         this.mInflater = LayoutInflater.from(context);
@@ -49,8 +51,10 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         historyList = historyLists.get(position);
-        holder.trip.setText(historyList.getTripName());
 
+        holder.trip.setText(historyList.getTripName());
+        holder.startPoint.setText(historyList.getStartPlace());
+        holder.endPoint.setText(historyList.getEndPlace());
 
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -59,10 +63,22 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
                 ////////////////////////////DELETE HERE
                 int positionOfItem = holder.getAdapterPosition();
                 showDialogForHistory(positionOfItem);
-                Log.v("a7a", historyList.getTripName());
+
 
             }
         });
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.v("qwert","clicked on item");
+                Intent toStaticMapIntent = new Intent(context, StaticMap.class);
+                toStaticMapIntent.putExtra("start",historyList.getStartPlace());
+                toStaticMapIntent.putExtra("end",historyList.getEndPlace());
+                context.startActivity(toStaticMapIntent);
+            }
+        });
+
 
     }
 
@@ -102,12 +118,17 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView trip;
+        TextView startPoint;
+        TextView endPoint;
         CheckBox checkBox;
-
+        ImageView mapImage;
         public ViewHolder(View itemView) {
             super(itemView);
             checkBox = itemView.findViewById(R.id.checkFinished);
             trip = itemView.findViewById(R.id.tripHome);
+            mapImage = itemView.findViewById(R.id.mapIconID);
+            startPoint = itemView.findViewById(R.id.source);
+            endPoint = itemView.findViewById(R.id.destination);
         }
     }
 
