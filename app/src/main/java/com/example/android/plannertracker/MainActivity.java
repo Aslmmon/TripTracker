@@ -28,15 +28,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     public static final String TRIP_DATA = "Trip Data";
-    SharedPreferences sharedPreferences;
     String id;
      Context context;
 
@@ -46,7 +43,6 @@ public class MainActivity extends AppCompatActivity
     NoteClass noteClass;
     ArrayList<TrackerInformation> trackerInformationList;
     boolean flagRound;
-    List<String> notesList;
 
     @Override
     protected void onStart() {
@@ -56,23 +52,11 @@ public class MainActivity extends AppCompatActivity
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            //    Log.i("trace", dataSnapshot.getKey());
+                Log.i("trace", dataSnapshot.getKey());
                 trackerInformationList.clear();
                 for (DataSnapshot trackInfo : dataSnapshot.getChildren()) {
                     getTrackDetails(trackInfo);
-                    for (DataSnapshot notesInfo : trackInfo.child("note").getChildren()){
-
-                        NoteClass note = notesInfo.getValue(NoteClass.class);
-
-                        String myNote = note.getMyNotes();
-
-                        noteClass = new NoteClass();
-                        noteClass.setMyNotes(myNote);
-
-                    }
-                    trackerInformation.setTripNotes(noteClass);
                     trackerInformationList.add(trackerInformation);
-
                 }
                 recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
                 recyclerView.setAdapter(new ArrayAdapter(MainActivity.this, trackerInformationList));
@@ -86,34 +70,15 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void addNoteData(DataSnapshot trackInfo) {
-        NoteClass noteValues = trackInfo.child("note").child("myNotes").getValue(NoteClass.class);
-        String key = trackInfo.child("note").getKey();
-        String notes = trackInfo.child("note").getValue().toString();
-        Log.i("trace", "onDataChange: " + noteValues);
-        Log.i("trace", " key : " + key);
-        Log.i("trace", " noteNeedeeeeeed : " + notes);
-        noteClass = new NoteClass();
-        String NoteAdded = noteValues.getMyNotes();
 
-        String id = noteValues.getId();
-        Log.i("trace", "onDataChange: " + NoteAdded);
-        Log.i("trace", "onDataChange: " + id);
-        noteClass.setId(id);
-        noteClass.setMyNotes(NoteAdded);
-    }
-
-    private void getTrackDetails(DataSnapshot trackInfo)
-    {
-//        Log.i("trace",trackInfo.getKey());
-//        Log.i("trace",trackInfo.getValue().toString());
+    private void getTrackDetails(DataSnapshot trackInfo) {
         TrackerInformation values = trackInfo.getValue(TrackerInformation.class);
         trackerInformation = new TrackerInformation();
         String nameOfTrip = values.getTripName();
         String start = values.getStartPosition();
         String end = values.getDestination();
         String date = values.getDate();
-        String time = values.getTime();   ////// USE SH ON THESE VARIABLES
+        String time = values.getTime();
         String tripType = values.getTripType();
         id = values.getId();
         trackerInformation.setTripName(nameOfTrip);
@@ -123,8 +88,6 @@ public class MainActivity extends AppCompatActivity
         trackerInformation.setTime(time);
         trackerInformation.setId(id);
         trackerInformation.setTripType(tripType);
-       // trackerInformation.setTripNotes(noteClass);
-      //  Log.i("trace",trackerInformation.getTripNotes().toString());
     }
 
     @Override
@@ -146,7 +109,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void intialize() {
-        notesList = new ArrayList<>();
         recyclerView = findViewById(R.id.recycler);
         trackerInformationList = new ArrayList<>();
     }

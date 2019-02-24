@@ -45,11 +45,14 @@
 
         <activity
             android:name=".BroadCastRecievers.AlarmDialog"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
+            android:theme="@style/Theme.AppCompat.Light.Dialog.Alert"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""/>
         <activity
             android:name=".TripDetails.AddNote"
-            android:label="@string/addNote"
-            android:theme="@style/Theme.AppCompat.Dialog" />
+            android:theme="@style/Theme.AppCompat.Dialog"
+            android:label="@string/addNote" />
     </application>
 
 </manifest>

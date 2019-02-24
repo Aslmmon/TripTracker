@@ -12,11 +12,13 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.content.SharedPreferences;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,16 +30,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder> {
+public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder>  {
     public static final String CLICKED_ITEM_POSITION = "ClickedItemPoisiton";
 
     public static final String PREFS_NAME = "MyPrefsFile";
     private Context context;
     private ArrayList<TrackerInformation> trackerInformations;
-    private List<String> notes;
-    NoteClass noteClass;
     TrackerInformation trackerInformation;
-    DatabaseReference databaseReference, databaseReferenceTwo;
+    DatabaseReference databaseReference,databaseReferenceTwo;
+    SharedPreferences sharedPreferences;
 
     public ArrayAdapter(Context context, ArrayList<TrackerInformation> trackerInformations) {
         this.context = context;
@@ -47,10 +48,7 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).
-                inflate(R.layout.my_list_home, parent, false);
-
-
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_list_home, parent, false);
         return new MyViewHolder(view);
     }
 
@@ -58,6 +56,15 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
     public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
         trackerInformation = trackerInformations.get(position);
         holder.trip.setText(trackerInformation.getTripName());
+//
+//        SharedPreferences mySharedPreferences = getS
+//        SharedPreferences.Editor editor = mySharedPreferences.edit();
+//        editor.putString("USERNAME",trackerInformation.getStartPosition());
+//        editor.apply();
+
+//        if (trackerInformation.getTripNotes().getMyNotes() != null) {
+//            holder.noteTaken.setText(trackerInformation.getTripNotes().getMyNotes());
+//        }
         holder.buttonView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -251,8 +258,6 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
             buttonView = itemView.findViewById(R.id.textViewOptions);
             myLayout = itemView.findViewById(R.id.Linear);
             checkBox = itemView.findViewById(R.id.checkFinished);
-            noteTaken = itemView.findViewById(R.id.tripHomeNotes);
-            checkBoxFinishedNotes = itemView.findViewById(R.id.checkFinishedNotes);
         }
     }
 }

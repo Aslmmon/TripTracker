@@ -1,7 +1,8 @@
 package com.example.android.plannertracker.TripDetails;
 
-import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -18,7 +19,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.example.android.plannertracker.MainActivity;
+import com.example.android.plannertracker.BroadCastRecievers.AlarmReciever;
+import com.example.android.plannertracker.BroadCastRecievers.NotificationReciever;
 import com.example.android.plannertracker.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -29,21 +31,26 @@ import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
 import java.util.Calendar;
 
 public class EditActtivity extends AppCompatActivity {
-    TextView startPosition, endPosition,tripName;
+    EditText startPosition, endPosition, tripName;
     RadioGroup radioGroup;
-    RadioButton radioButton,single,round;
+    Calendar c;
+    RadioButton radioButton, single, round;
     DatabaseReference databaseReference;
     Button date, time, update;
     TextView dateText, timeText;
+    int hour, minute, mYear, mMonth, mDay;
+    int x;
+    TimePickerDialog mTimePicker;
     DatePickerDialog datePickerDialog;
     TrackerInformation trackerInformation;
-    String tripNameChosen,startLocation,endLocation,dateChosen,timeChosen,IDTaken,TripType;
+    String tripNameChosen, startLocation, endLocation, dateChosen, timeChosen, IDTaken, TripType;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
+        c = Calendar.getInstance();
         initialize();
         getExtras();
         date.setOnClickListener(new View.OnClickListener() {
@@ -61,8 +68,9 @@ public class EditActtivity extends AppCompatActivity {
         update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 updateToDatabase();
+                setAlarm(false);
+                finish();
             }
         });
 
@@ -98,12 +106,12 @@ public class EditActtivity extends AppCompatActivity {
         String time = timeText.getText().toString();
 
         String ID = IDTaken;
-        Log.i("trace", "updateToDatabase:  "+ ID);
+        Log.i("trace", "updateToDatabase:  " + ID);
         if (!TextUtils.isEmpty(start) && !TextUtils.isEmpty(date) &&
                 !TextUtils.isEmpty(time) && !TextUtils.isEmpty(theTripName)
                 && !TextUtils.isEmpty(TripType)) {
             TrackerInformation trackerInformation = new TrackerInformation(ID, start,
-                    destination, theTripName, time, date,TripType);
+                    destination, theTripName, time, date, TripType);
             databaseReference.child(ID).setValue(trackerInformation);
             Toast.makeText(this, "Done Updated", Toast.LENGTH_SHORT).show();
 
@@ -112,20 +120,21 @@ public class EditActtivity extends AppCompatActivity {
             endPosition.setText("");
             dateText.setText("");
             timeText.setText("");
-        }else{
+        } else {
             Toast.makeText(this, "Enter Valid bodies", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void chooseTime() {
         Calendar mcurrentTime = Calendar.getInstance();
-        int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
-        int minute = mcurrentTime.get(Calendar.MINUTE);
-        TimePickerDialog mTimePicker;
+        hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
+        minute = mcurrentTime.get(Calendar.MINUTE);
         mTimePicker = new TimePickerDialog(EditActtivity.this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                 String status = "AM";
+                hour = selectedHour;
+                minute = selectedMinute;
                 if (selectedHour > 11) {
                     // If the hour is greater than or equal to 12
                     // Then the current AM PM status is PM
@@ -148,12 +157,15 @@ public class EditActtivity extends AppCompatActivity {
 
     private void chooseDate() {
         final Calendar c = Calendar.getInstance();
-        int mYear = c.get(Calendar.YEAR); // current year
-        int mMonth = c.get(Calendar.MONTH); // current month
-        int mDay = c.get(Calendar.DAY_OF_MONTH); // current day
+        mYear = c.get(Calendar.YEAR); // current year
+        mMonth = c.get(Calendar.MONTH); // current month
+        mDay = c.get(Calendar.DAY_OF_MONTH); // current day
         datePickerDialog = new DatePickerDialog(EditActtivity.this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                mYear = year;
+                mMonth = month;
+                mDay = day;
                 dateText.setText(day + "/" + (month + 1) + "/" + year);
             }
         }, mYear, mMonth, mDay);
@@ -177,6 +189,29 @@ public class EditActtivity extends AppCompatActivity {
         dateText = findViewById(R.id.dateTextUpdate);
         databaseReference = FirebaseDatabase.getInstance().getReference("Trip Data");
 
+    }
+
+    private void setAlarm(boolean isNotification) {
+        AlarmManager manager = (AlarmManager) getSystemService(this.ALARM_SERVICE);
+        Intent intent;
+        PendingIntent pendingIntent;
+        int x = (int) System.currentTimeMillis();
+        if (isNotification) {
+            intent = new Intent(this, NotificationReciever.class);
+            pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
+        } else {
+            intent = new Intent(this, AlarmReciever.class);
+            pendingIntent = PendingIntent.getBroadcast(this, x, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        }
+
+        c.set(mYear, mMonth, mDay, hour, minute, 0);
+        manager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(),
+                pendingIntent);
+        Log.i("time Update", String.valueOf(c));
+        Log.i("time Update", String.valueOf(c.getTimeInMillis()));
+        Log.i("time Update", String.valueOf(c.getTimeZone()));
+        Log.i("time Update", String.valueOf(c.getTime()));
     }
 
 

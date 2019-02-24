@@ -21,13 +21,13 @@ public class NoteClass {
         this.id = id;
     }
 
-    public void setMyNotes(String myNotes) {
-        this.myNotes = myNotes;
-    }
 
     public String getMyNotes() {
         return myNotes;
     }
 
+    public void setMyNotes(String myNotes) {
+        this.myNotes = myNotes;
+    }
 
 }

@@ -33,7 +33,6 @@ public class AlarmDialog extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         if (!flag) {
             playSound();
         }
@@ -49,9 +48,11 @@ public class AlarmDialog extends AppCompatActivity {
     }
 
     private void showAlarmDialog() {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME , 0);
+        String tripName = settings.getString("tripName","No trip");
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Reminder To your Trip")
-                .setMessage("Your Trip is : ")
+                .setMessage("Your Trip is : " + tripName)
                 .setPositiveButton("Ok Start", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -93,6 +94,8 @@ public class AlarmDialog extends AppCompatActivity {
     }
 
     private void sendNotification() {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME , 0);
+        String tripName = settings.getString("tripName","No trip");
 
         PendingIntent again = PendingIntent.getActivity(this,0,
                 new Intent(this,AlarmDialog.class),PendingIntent.FLAG_UPDATE_CURRENT);
@@ -100,10 +103,10 @@ public class AlarmDialog extends AppCompatActivity {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_SOUND)
-                .setSmallIcon(R.drawable.family_son)
-                .setContentTitle("Your trip")
+                .setSmallIcon(R.drawable.map)
+                .setContentTitle("Your trip " + tripName)
                 .setContentText("Check out your Trip")
-                .setContentInfo("info")
+                .setContentInfo("will Start soon ")
                 .setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_ALL | Notification.DEFAULT_SOUND)
                 .setContentIntent(again);
 
