@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "371776517266-t53bkehpien9jjg7q98g0vica0qh9dtk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.android.plannertracker",
+            "certificate_hash": "6a08abdb88f8e1eb907a221d5967d65e2a4fee71"
+          }
+        },
+        {
           "client_id": "371776517266-ebjqveqqk3b02g47jah7esmntu3f7e3b.apps.googleusercontent.com",
           "client_type": 3
         }

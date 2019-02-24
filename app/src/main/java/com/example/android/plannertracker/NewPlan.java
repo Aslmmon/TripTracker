@@ -29,6 +29,8 @@ import com.example.android.plannertracker.BroadCastRecievers.NotificationRecieve
 import com.example.android.plannertracker.SqltieDatabase.DbContract;
 import com.example.android.plannertracker.SqltieDatabase.DbHelper;
 import com.example.android.plannertracker.TripDetails.TrackerInformation;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -49,13 +51,18 @@ public class NewPlan extends AppCompatActivity {
     DatabaseReference databaseReference;
     Button dateBtn, timeBtn, save;
     TextView dateText, timeText;
+    FirebaseUser fu;
+    FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_plan);
+
+
+
         c = Calendar.getInstance();
-        initialize();
+      final String userId=initialize();
         dateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -71,7 +78,7 @@ public class NewPlan extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveToDatabase();
+                saveToDatabase(userId);
                 //showAlarmDialog();
                 //  saveTointernal();
                 setAlarm(false);
@@ -118,7 +125,7 @@ public class NewPlan extends AppCompatActivity {
         }).create().show();
     }
 
-    private void saveToDatabase() {
+    private void saveToDatabase(String id) {
 
         int radioId = radioGroup.getCheckedRadioButtonId();
         radioButton = findViewById(radioId);
@@ -134,10 +141,10 @@ public class NewPlan extends AppCompatActivity {
         if (!TextUtils.isEmpty(start) && !TextUtils.isEmpty(date) &&
                 !TextUtils.isEmpty(time) && !TextUtils.isEmpty(TripName)
                 && !TextUtils.isEmpty(TripType)) {
-            String id = databaseReference.push().getKey();
+          //  String id = databaseReference.push().getKey();
             TrackerInformation trackerInformation = new TrackerInformation(id, start,
                     destination, TripName, time, date, TripType);
-            databaseReference.child(id).setValue(trackerInformation);
+           databaseReference.child(id).child("trip data").setValue(trackerInformation);
             Toast.makeText(this, "Done Added", Toast.LENGTH_SHORT).show();
             tripName.setText("");
             startPosition.setText("");
@@ -195,7 +202,7 @@ public class NewPlan extends AppCompatActivity {
 
     }
 
-    private void initialize() {
+    private String initialize() {
         radioGroup = findViewById(R.id.radioGrp);
         tripName = findViewById(R.id.TripNameNew);
         startPosition = findViewById(R.id.startPosition);
@@ -206,7 +213,11 @@ public class NewPlan extends AppCompatActivity {
         timeText = findViewById(R.id.timeText);
         dateText = findViewById(R.id.dateText);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("Trip Data");
+       databaseReference = FirebaseDatabase.getInstance().getReference("users");
+        mAuth = FirebaseAuth.getInstance();
+        fu=mAuth.getCurrentUser();
+      String id=  createAnewUser();
+        return id;
     }
 
     private void setAlarm(boolean isNotification) {
@@ -230,4 +241,23 @@ public class NewPlan extends AppCompatActivity {
         Log.i("trace", String.valueOf(c.getTimeZone()));
         Log.i("trace", String.valueOf(c.getTime()));
     }
+    private String createAnewUser() {
+
+        Intent intent = getIntent();
+
+        String id=fu.getUid();
+
+        String Name = intent.getStringExtra("SEND_TEXT1");
+        String Email=intent.getStringExtra("SEND_TEXT2");
+        String Password=intent.getStringExtra("SEND_TEXT3");
+
+
+        User user =new User(Name,Email,Password);
+
+        databaseReference.child(id).setValue(user);
+        return  id;
+
+    }
+
+
 }

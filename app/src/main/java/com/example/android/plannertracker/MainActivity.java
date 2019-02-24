@@ -3,6 +3,7 @@ package com.example.android.plannertracker;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,10 +16,14 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.android.plannertracker.TripDetails.ArrayAdapter;
 import com.example.android.plannertracker.TripDetails.NoteClass;
 import com.example.android.plannertracker.TripDetails.TrackerInformation;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -42,13 +47,28 @@ public class MainActivity extends AppCompatActivity
     boolean flagRound;
     List<String> notesList;
 
+    FirebaseDatabase database;
+    FirebaseAuth mAuth;
+    FirebaseAuth.AuthStateListener mAuthListner;
+    FirebaseUser mUser;
+
+
     @Override
     protected void onStart() {
         super.onStart();
         dataBaseNote = FirebaseDatabase.getInstance().getReference("Trip Data");
-        databaseReference = FirebaseDatabase.getInstance().getReference("Trip Data");
+      //  databaseReference = FirebaseDatabase.getInstance().getReference("Trip Data");
+        mAuth = FirebaseAuth.getInstance();
+        mUser = mAuth.getCurrentUser();
+
+
+
+        database = FirebaseDatabase.getInstance();
+        databaseReference = database.getReference("users");
         //dataBaseNote.keepSynced(true);
         databaseReference.keepSynced(true);
+
+
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -133,6 +153,8 @@ public class MainActivity extends AppCompatActivity
                 startActivity(new Intent(MainActivity.this, NewPlan.class));
             }
         });
+
+
     }
 
     private void intialize() {
@@ -174,8 +196,57 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.logOut) {
 
         }
+        else  if(id==R.id.profile_image){
+
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    private void checkAnewUser(String id, final String email, String password) {
+
+
+        databaseReference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded( DataSnapshot dataSnapshot,  String s) {
+                //  User u= dataSnapshot.getValue(User.class);
+                User u=new User();
+
+
+
+                String userEmail=u.getUserEmail();
+                if(userEmail==email){
+                    Toast.makeText(MainActivity.this, userEmail, Toast.LENGTH_SHORT).show();
+                }
+
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+
+
+
 }
