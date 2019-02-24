@@ -33,7 +33,7 @@
                 android:id="@+id/TripNameEdit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_above="@+id/begin"
+                android:layout_above="@+id/beginUpdate"
                 android:layout_marginLeft="10dp"
                 android:hint="TripName" />
 

@@ -83,16 +83,7 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
             }
         });
 
-        holder.checkBoxFinishedNotes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
 
-                    Toast.makeText(context, "Remove Note", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
     }
 
     public void saveToFinishedDatabase(int position) {
