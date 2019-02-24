@@ -23,4 +23,6 @@
     <string name="start">Start</string>
     <string name="addNote">Add Note</string>
     <string name="tripDetails">Trip Details</string>
+    <string name="startText">From:</string>
+    <string name="endText">To:</string>
 </resources>

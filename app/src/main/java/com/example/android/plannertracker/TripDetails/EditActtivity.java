@@ -1,7 +1,9 @@
 package com.example.android.plannertracker.TripDetails;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -16,14 +18,18 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.android.plannertracker.MainActivity;
 import com.example.android.plannertracker.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.mapbox.api.geocoding.v5.models.CarmenFeature;
+import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
+import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
 
 import java.util.Calendar;
 
 public class EditActtivity extends AppCompatActivity {
-    EditText startPosition, endPosition,tripName;
+    TextView startPosition, endPosition,tripName;
     RadioGroup radioGroup;
     RadioButton radioButton,single,round;
     DatabaseReference databaseReference;
@@ -32,6 +38,7 @@ public class EditActtivity extends AppCompatActivity {
     DatePickerDialog datePickerDialog;
     TrackerInformation trackerInformation;
     String tripNameChosen,startLocation,endLocation,dateChosen,timeChosen,IDTaken,TripType;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +65,8 @@ public class EditActtivity extends AppCompatActivity {
                 updateToDatabase();
             }
         });
+
+
 
     }
 
@@ -169,4 +178,6 @@ public class EditActtivity extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference("Trip Data");
 
     }
+
+
 }

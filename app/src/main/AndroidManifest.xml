@@ -12,6 +12,17 @@
         android:roundIcon="@drawable/travel"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".TripDetails.StaticMap"></activity>
+        <activity android:name=".TripDetails.Splash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".TripDetails.HistoryRecyclerAdapter" />
+        <activity android:name=".TripDetails.History" />
         <activity android:name=".NewPlan" />
 
         <service
@@ -22,19 +33,12 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main2"
-            android:theme="@style/AppTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/AppTheme"></activity>
         <activity android:name=".TripDetails.EditActtivity" />
         <activity
             android:name=".TripDetails.DetailActivity"
-            android:theme="@style/Theme.AppCompat.Dialog"
-            android:label="@string/tripDetails"/>
+            android:label="@string/tripDetails"
+            android:theme="@style/Theme.AppCompat.Dialog" />
 
         <receiver android:name=".BroadCastRecievers.NotificationReciever" />
         <receiver android:name=".BroadCastRecievers.AlarmReciever" />
@@ -44,8 +48,8 @@
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
         <activity
             android:name=".TripDetails.AddNote"
-            android:theme="@style/Theme.AppCompat.Dialog"
-            android:label="@string/addNote" />
+            android:label="@string/addNote"
+            android:theme="@style/Theme.AppCompat.Dialog" />
     </application>
 
 </manifest>

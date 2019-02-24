@@ -14,6 +14,7 @@ android {
     }
     buildTypes {
         release {
+
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -35,9 +36,12 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:16.0.1'
     implementation 'de.hdodenhof:circleimageview:3.0.0'
 
-   // implementation 'com.android.support:animated-vector-drawable:27.1.1'
+    // implementation 'com.android.support:animated-vector-drawable:27.1.1'
     implementation 'com.google.firebase:firebase-core:16.0.7'
     // places sdk
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-places-v7:0.7.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-markerview-v7:0.2.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:7.1.2'
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
+    implementation 'com.google.android.gms:play-services-maps:16.1.0'
 }
