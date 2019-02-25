@@ -169,6 +169,7 @@ public class EditActtivity extends AppCompatActivity {
                 dateText.setText(day + "/" + (month + 1) + "/" + year);
             }
         }, mYear, mMonth, mDay);
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
         datePickerDialog.show();
     }
 

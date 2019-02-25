@@ -18,7 +18,7 @@ import com.example.android.plannertracker.TripDetails.AddNote;
 public class ChatHeadService extends Service {
     private WindowManager windowManager;
     private View chatHeadView;
-    String IDClicked;
+    String IDClicked,Key;
     ImageView closeChatHead,chatHeadImage;
 
     public ChatHeadService() {
@@ -32,6 +32,7 @@ public class ChatHeadService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
        IDClicked = intent.getStringExtra("id");
+       Key = IDClicked;
         Log.i("trace",IDClicked);
         return super.onStartCommand(intent, flags, startId);
 

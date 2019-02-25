@@ -22,6 +22,7 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.plannertracker.ChatHeadService;
 import com.example.android.plannertracker.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -30,14 +31,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder>  {
+public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder> {
     public static final String CLICKED_ITEM_POSITION = "ClickedItemPoisiton";
 
     public static final String PREFS_NAME = "MyPrefsFile";
     private Context context;
     private ArrayList<TrackerInformation> trackerInformations;
     TrackerInformation trackerInformation;
-    DatabaseReference databaseReference,databaseReferenceTwo;
+    DatabaseReference databaseReference, databaseReferenceTwo;
     SharedPreferences sharedPreferences;
 
     public ArrayAdapter(Context context, ArrayList<TrackerInformation> trackerInformations) {
@@ -56,15 +57,6 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
     public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
         trackerInformation = trackerInformations.get(position);
         holder.trip.setText(trackerInformation.getTripName());
-//
-//        SharedPreferences mySharedPreferences = getS
-//        SharedPreferences.Editor editor = mySharedPreferences.edit();
-//        editor.putString("USERNAME",trackerInformation.getStartPosition());
-//        editor.apply();
-
-//        if (trackerInformation.getTripNotes().getMyNotes() != null) {
-//            holder.noteTaken.setText(trackerInformation.getTripNotes().getMyNotes());
-//        }
         holder.buttonView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -75,10 +67,10 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
-
-                int positionOfItem = holder.getAdapterPosition();
-                showDialogForHistory(positionOfItem);
-
+                if (b) {
+                    int positionOfItem = holder.getAdapterPosition();
+                    showDialogForHistory(positionOfItem);
+                }
 
             }
         });
@@ -86,9 +78,10 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
 
     }
 
+
     public void saveToFinishedDatabase(int position) {
         String id = databaseReferenceTwo.push().getKey();
-        Log.v("xxxx",id);
+        Log.v("xxxx", id);
 
 
         HistoryList historyList = new HistoryList(trackerInformations.get(position).getTripName(), trackerInformations.get(position).getStartPosition(), trackerInformations.get(position).getDestination(), id);
@@ -164,10 +157,14 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                databaseReference = FirebaseDatabase.getInstance().getReference("Trip Data").child("note");
+                context.stopService(new Intent(context,ChatHeadService.class));
                 databaseReferenceTwo = FirebaseDatabase.getInstance().getReference("Trip History");
                 saveToFinishedDatabase(adapterpostion);
                 // moveToHistory(adapterpostion);
                 removeItem(adapterpostion);
+
+
             }
         }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override

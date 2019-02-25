@@ -73,15 +73,12 @@ public class History extends AppCompatActivity {
     }
 
     private void getTrackDetails(DataSnapshot trackInfo) {
-        //    getTrackDetails(trackInfo);
-
         HistoryList values = trackInfo.getValue(HistoryList.class);
         historyList = new HistoryList();
         String tripName = values.getTripName();
         String start = values.getStartPlace();
         String end = values.getEndPlace();
         String id = values.getId(); /// newly added
-        Log.v("zzzzz", id);
 
         historyList.setTripName(tripName);
         historyList.setStartPlace(start);

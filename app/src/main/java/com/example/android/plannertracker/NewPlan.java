@@ -46,7 +46,7 @@ import java.util.Calendar;
 
 public class NewPlan extends AppCompatActivity {
     private static final int AUTOCOMPLETE_REQUEST_CODE = 2;
-    public  int ALARM_TRIP_REQUEST = 0;
+    public int ALARM_TRIP_REQUEST = 0;
     private static final String token = "sk.eyJ1IjoibWlsa3lyYW5nZXIiLCJhIjoiY2pzOTBzOXlxMTZ6ZDN6czhiNTJjY2JrdCJ9.TVE3NN-juPXRMYr14hRBFA";
     public static final String PREFS_NAME = "MyPrefsFile";
     Calendar c, calendarRound;
@@ -65,7 +65,7 @@ public class NewPlan extends AppCompatActivity {
     TextView dateText, timeText, roundDateText, roundTimeText;
     ImageView roundDateIcon, roundTimeIcon;
     TextInputEditText editTextTripRound;
-    int x,y;
+    int x, y;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -190,6 +190,7 @@ public class NewPlan extends AppCompatActivity {
                 roundDateText.setText(day + "/" + (month + 1) + "/" + year);
             }
         }, roundYear, roundMonth, roundDAy);
+        mDatePickerRound.getDatePicker().setMinDate(System.currentTimeMillis());
         mDatePickerRound.show();
 
     }
@@ -333,10 +334,6 @@ public class NewPlan extends AppCompatActivity {
         }
 
 
-//        SharedPreferences settings = getSharedPreferences(PREFS_NAME , 0);
-//        SharedPreferences.Editor editor = settings.edit();
-//        editor.putString("tripName",TripName);
-//        editor.commit();
     }
 
     private void chooseTime() {
@@ -381,6 +378,7 @@ public class NewPlan extends AppCompatActivity {
                 dateText.setText(day + "/" + (month + 1) + "/" + year);
             }
         }, mYear, mMonth, mDay);
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
         datePickerDialog.show();
 
     }
@@ -427,6 +425,7 @@ public class NewPlan extends AppCompatActivity {
         c.set(mYear, mMonth, mDay, hour, minute, 0);
         manager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(),
                 pendingIntent);
+
         Log.i("timeSave", String.valueOf(c));
         Log.i("timeSave", String.valueOf(c.getTimeInMillis()));
         Log.i("timeSave", String.valueOf(c.getTimeZone()));

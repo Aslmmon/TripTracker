@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -26,6 +27,8 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.android.plannertracker.TripDetails.ArrayAdapter.PREFS_NAME;
+
 public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecyclerAdapter.ViewHolder> {
 
 
@@ -40,6 +43,7 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
         this.mInflater = LayoutInflater.from(context);
         this.historyLists = historyLists;
         this.context = context;
+
     }
 
     @Override
@@ -52,6 +56,7 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         historyList = historyLists.get(position);
 
+
         holder.trip.setText(historyList.getTripName());
         holder.startPoint.setText(historyList.getStartPlace());
         holder.endPoint.setText(historyList.getEndPlace());
@@ -60,10 +65,10 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
-                ////////////////////////////DELETE HERE
-                int positionOfItem = holder.getAdapterPosition();
-                showDialogForHistory(positionOfItem);
-
+                if (b) {
+                    int positionOfItem = holder.getAdapterPosition();
+                    showDialogForHistory(positionOfItem);
+                }
 
             }
         });

@@ -1,6 +1,9 @@
 package com.example.android.plannertracker.TripDetails;
 
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +30,7 @@ import java.util.List;
 
 public class AddNote extends AppCompatActivity {
     public static final String CLICKED_ITEM_POSITION = "ClickedItemPoisiton";
+    private static final int CODE_DRAW_OVER_OTHER_APP_PERMISSION = 2500;
     EditText addNote;
     int position;
     ListView listView;
@@ -65,6 +69,8 @@ public class AddNote extends AppCompatActivity {
     }
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,20 +80,27 @@ public class AddNote extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //List<String> NoteAdded = new ArrayList<>();
-                //NoteAdded.add(note);
                 String note = addNote.getText().toString();
-                String IDClicked = getIntent().getStringExtra("id");
-                String key = databaseReference.child("note").push().getKey();
-                NoteClass noteClass = new NoteClass(key, note);
-                databaseReference.child("note").child(key).setValue(noteClass);
-                Toast.makeText(AddNote.this, "Done added", Toast.LENGTH_SHORT).show();
-                addNote.setText(" ");
-                //open Chat head
-                goToChatHead();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(AddNote.this)) {
+                    //If the draw over permission is not available open the settings screen
+                    //to grant the permission.
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                            Uri.parse("package:" + getPackageName()));
+                    startActivityForResult(intent, CODE_DRAW_OVER_OTHER_APP_PERMISSION);
+                }else{
+                    String IDClicked = getIntent().getStringExtra("id");
+                    String key = databaseReference.child("note").push().getKey();
+                    NoteClass noteClass = new NoteClass(key, note);
+                    databaseReference.child("note").child(key).setValue(noteClass);
+                    Toast.makeText(AddNote.this, "Done added", Toast.LENGTH_SHORT).show();
+                    addNote.setText(" ");
+                    goToChatHead();
+                }
+
                 finish();
             }
         });
+
 
     }
 
@@ -110,5 +123,23 @@ public class AddNote extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference("Trip Data").child(IDTaken);
         addNote = findViewById(R.id.editNote);
         fab = findViewById(R.id.fab);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK ){
+            String note = addNote.getText().toString();
+            String IDClicked = getIntent().getStringExtra("id");
+            String key = databaseReference.child("note").push().getKey();
+            NoteClass noteClass = new NoteClass(key, note);
+            databaseReference.child("note").child(key).setValue(noteClass);
+            Toast.makeText(AddNote.this, "Done added", Toast.LENGTH_SHORT).show();
+            addNote.setText(" ");
+            goToChatHead();
+        }else{
+            Toast.makeText(this, "Draw over Permission is Required", Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 }
