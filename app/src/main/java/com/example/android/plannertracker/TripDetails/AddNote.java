@@ -105,7 +105,7 @@ public class AddNote extends AppCompatActivity {
 
 
     private void initialize() {
-        listView = findViewById(R.id.myList);
+        listView = findViewById(R.id.theList);
         myNotesList = new ArrayList<>();
         databaseReference = FirebaseDatabase.getInstance().getReference("Trip Data").child(IDTaken);
         addNote = findViewById(R.id.editNote);
