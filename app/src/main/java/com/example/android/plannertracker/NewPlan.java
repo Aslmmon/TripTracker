@@ -46,7 +46,7 @@ import java.util.Calendar;
 
 public class NewPlan extends AppCompatActivity {
     private static final int AUTOCOMPLETE_REQUEST_CODE = 2;
-    public  int ALARM_TRIP_REQUEST = 0;
+    public int ALARM_TRIP_REQUEST = 0;
     private static final String token = "sk.eyJ1IjoibWlsa3lyYW5nZXIiLCJhIjoiY2pzOTBzOXlxMTZ6ZDN6czhiNTJjY2JrdCJ9.TVE3NN-juPXRMYr14hRBFA";
     public static final String PREFS_NAME = "MyPrefsFile";
     Calendar c, calendarRound;
@@ -65,7 +65,7 @@ public class NewPlan extends AppCompatActivity {
     TextView dateText, timeText, roundDateText, roundTimeText;
     ImageView roundDateIcon, roundTimeIcon;
     TextInputEditText editTextTripRound;
-    int x,y;
+    int x, y;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -320,11 +320,15 @@ public class NewPlan extends AppCompatActivity {
 
         if (!TextUtils.isEmpty(start) && !TextUtils.isEmpty(date) &&
                 !TextUtils.isEmpty(time) && !TextUtils.isEmpty(TripName)
-                && !TextUtils.isEmpty(TripType)) {
+                && !TextUtils.isEmpty(TripType))
+        {
             String id = databaseReference.push().getKey();
+            Intent intent = getIntent();
+            String uid = intent.getStringExtra("SEND_ID");
             TrackerInformation trackerInformation = new TrackerInformation(id, start,
                     destination, TripName, time, date, TripType);
-            databaseReference.child(id).setValue(trackerInformation);
+            //    databaseReference.child(id).setValue(trackerInformation);
+            databaseReference.child(uid).child("Trip Data").child(id).setValue(trackerInformation);
             Toast.makeText(this, "Done Added", Toast.LENGTH_SHORT).show();
 
         } else {
@@ -364,6 +368,7 @@ public class NewPlan extends AppCompatActivity {
                 timeText.setText(hour_of_12_hour_format + " : " + selectedMinute + " :" + status);
             }
         }, hour, minute, false);//Yes 24 hour time
+
         mTimePicker.setTitle("Select Time");
         mTimePicker.show();
     }
@@ -381,6 +386,7 @@ public class NewPlan extends AppCompatActivity {
                 dateText.setText(day + "/" + (month + 1) + "/" + year);
             }
         }, mYear, mMonth, mDay);
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
         datePickerDialog.show();
 
     }
@@ -406,7 +412,8 @@ public class NewPlan extends AppCompatActivity {
         dateText = findViewById(R.id.dateText);
         int radioId = radioGroup.getCheckedRadioButtonId();
         radioButton = findViewById(radioId);
-        databaseReference = FirebaseDatabase.getInstance().getReference("Trip Data");
+        //  databaseReference = FirebaseDatabase.getInstance().getReference("Trip Data");
+        databaseReference = FirebaseDatabase.getInstance().getReference("users");
     }
 
     private void setAlarm(boolean isNotification) {

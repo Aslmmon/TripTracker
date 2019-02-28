@@ -22,6 +22,8 @@ import com.example.android.plannertracker.TripDetails.ArrayAdapter;
 import com.example.android.plannertracker.TripDetails.History;
 import com.example.android.plannertracker.TripDetails.NoteClass;
 import com.example.android.plannertracker.TripDetails.TrackerInformation;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,13 +45,17 @@ public class MainActivity extends AppCompatActivity
     NoteClass noteClass;
     ArrayList<TrackerInformation> trackerInformationList;
     boolean flagRound;
+    FirebaseUser fu ;
+    FirebaseAuth mAuth;
+    String userId;
 
     @Override
     protected void onStart() {
         super.onStart();
-        databaseReference = FirebaseDatabase.getInstance().getReference("Trip Data");
+        databaseReference = FirebaseDatabase.getInstance().getReference("users");
         databaseReference.keepSynced(true);
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.child(userId).child("Trip Data").addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.i("trace", dataSnapshot.getKey());
@@ -94,6 +100,10 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
+        databaseReference =  FirebaseDatabase.getInstance().getReference("users");
+        mAuth = FirebaseAuth.getInstance();
+        fu = mAuth.getCurrentUser();
+        userId = fu.getUid();
         intialize();
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -103,7 +113,10 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, NewPlan.class));
+
+                Intent intent = new Intent(MainActivity.this,NewPlan.class);
+                intent.putExtra("SEND_ID",userId);
+                startActivity(intent);
             }
         });
     }
@@ -149,10 +162,18 @@ public class MainActivity extends AppCompatActivity
 
         }
         else if (id == R.id.logOut) {
+            signOut();
+            Intent intent = new Intent(this,LoginActivity.class);
+            startActivity(intent);
 
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public  void signOut()
+    {
+        mAuth.signOut();
     }
 }

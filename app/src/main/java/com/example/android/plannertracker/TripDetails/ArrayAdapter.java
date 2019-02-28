@@ -22,7 +22,10 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.plannertracker.ChatHeadService;
 import com.example.android.plannertracker.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -39,6 +42,9 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
     TrackerInformation trackerInformation;
     DatabaseReference databaseReference,databaseReferenceTwo;
     SharedPreferences sharedPreferences;
+    FirebaseAuth mAuth;
+    FirebaseUser mUser;
+    String uId;
 
     public ArrayAdapter(Context context, ArrayList<TrackerInformation> trackerInformations) {
         this.context = context;
@@ -87,12 +93,17 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
     }
 
     public void saveToFinishedDatabase(int position) {
+        databaseReferenceTwo = FirebaseDatabase.getInstance().getReference("users");
+        mAuth = FirebaseAuth.getInstance();
+        mUser = mAuth.getCurrentUser();
+        uId = mUser.getUid();
+
         String id = databaseReferenceTwo.push().getKey();
         Log.v("xxxx",id);
 
 
         HistoryList historyList = new HistoryList(trackerInformations.get(position).getTripName(), trackerInformations.get(position).getStartPosition(), trackerInformations.get(position).getDestination(), id);
-        databaseReferenceTwo.child(id).setValue(historyList);
+        databaseReferenceTwo.child(uId).child("Trip History").child(id).setValue(historyList);
     }
 
     public void moveToHistory(int position) {
@@ -165,6 +176,7 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 databaseReferenceTwo = FirebaseDatabase.getInstance().getReference("Trip History");
+                context.stopService(new Intent(context, ChatHeadService.class));
                 saveToFinishedDatabase(adapterpostion);
                 // moveToHistory(adapterpostion);
                 removeItem(adapterpostion);
@@ -211,10 +223,13 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
     private void removeItem(int adapterPosition) {
 
         String id = trackerInformations.get(adapterPosition).getId();
-        databaseReference = FirebaseDatabase.getInstance().getReference("Trip Data");
+        databaseReference = FirebaseDatabase.getInstance().getReference("users");
+        mAuth = FirebaseAuth.getInstance();
+        mUser=mAuth.getCurrentUser();
+        uId=mUser.getUid();
 
-        Log.i("trace", "removeItem: " + id);
-        databaseReference.child(id).removeValue();
+        databaseReference.child(uId).child("Trip Data").child(id).removeValue();
+
         trackerInformations.remove(adapterPosition);
         notifyItemRemoved(adapterPosition);
         notifyItemRangeChanged(adapterPosition, trackerInformations.size());

@@ -1,6 +1,9 @@
 package com.example.android.plannertracker.TripDetails;
 
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +18,8 @@ import android.widget.Toast;
 
 import com.example.android.plannertracker.ChatHeadService;
 import com.example.android.plannertracker.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,6 +40,10 @@ public class AddNote extends AppCompatActivity {
     String IDTaken;
     List<String> myNotesList;
     FloatingActionButton fab;
+    String uId;
+    FirebaseAuth mAuth;
+    FirebaseUser mUser;
+
 
     @Override
     protected void onStart() {
@@ -77,14 +86,29 @@ public class AddNote extends AppCompatActivity {
                 //List<String> NoteAdded = new ArrayList<>();
                 //NoteAdded.add(note);
                 String note = addNote.getText().toString();
-                String IDClicked = getIntent().getStringExtra("id");
-                String key = databaseReference.child("note").push().getKey();
-                NoteClass noteClass = new NoteClass(key, note);
-                databaseReference.child("note").child(key).setValue(noteClass);
-                Toast.makeText(AddNote.this, "Done added", Toast.LENGTH_SHORT).show();
-                addNote.setText(" ");
-                //open Chat head
-                goToChatHead();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(AddNote.this)) {
+                    //If the draw over permission is not available open the settings screen
+                    //to grant the permission.
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                            Uri.parse("package:" + getPackageName()));
+                    startActivityForResult(intent, 1);
+                }else{
+                    String IDClicked = getIntent().getStringExtra("id");
+                    String key = databaseReference.child("note").push().getKey();
+                    NoteClass noteClass = new NoteClass(key, note);
+                    databaseReference.child("note").child(key).setValue(noteClass);
+                    Toast.makeText(AddNote.this, "Done added", Toast.LENGTH_SHORT).show();
+                    addNote.setText(" ");
+                    goToChatHead();
+                }
+//                String IDClicked = getIntent().getStringExtra("id");
+//                String key = databaseReference.child("note").push().getKey();
+//                NoteClass noteClass = new NoteClass(key, note);
+//                databaseReference.child("notes").child(key).setValue(noteClass);
+//                Toast.makeText(AddNote.this, "Done added", Toast.LENGTH_SHORT).show();
+//                addNote.setText(" ");
+//                //open Chat head
+//                goToChatHead();
                 finish();
             }
         });
@@ -106,9 +130,15 @@ public class AddNote extends AppCompatActivity {
 
     private void initialize() {
         listView = findViewById(R.id.theList);
+        mAuth = FirebaseAuth.getInstance();
         myNotesList = new ArrayList<>();
-        databaseReference = FirebaseDatabase.getInstance().getReference("Trip Data").child(IDTaken);
+        mUser=mAuth.getCurrentUser();
+        uId=mUser.getUid();
+        databaseReference = FirebaseDatabase.getInstance().getReference("users").child(uId).child("Trip Data").child(IDTaken);
         addNote = findViewById(R.id.editNote);
         fab = findViewById(R.id.fab);
+
+
+
     }
 }

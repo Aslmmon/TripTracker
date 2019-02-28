@@ -18,6 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.plannertracker.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.mapbox.geocoder.MapboxGeocoder;
@@ -39,8 +41,13 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
     private ArrayList<HistoryList> historyLists;
     private HistoryList historyList;
     DatabaseReference databaseReference;
+    FirebaseUser fu;
     private Context context;
     StaticMap staticMap ;
+    FirebaseDatabase database;
+    FirebaseAuth mAuth;
+    FirebaseUser mUser;
+    String uid;
 
     int flag = 0 ;
     private  double lat1, lat2;
@@ -204,10 +211,15 @@ public class HistoryRecyclerAdapter extends RecyclerView.Adapter<HistoryRecycler
 
     private void removeItem(int adapterPosition) {
         String id = historyLists.get(adapterPosition).getId();
-        databaseReference = FirebaseDatabase.getInstance().getReference("Trip History");
+        databaseReference = FirebaseDatabase.getInstance().getReference("users");
 
+        mAuth = FirebaseAuth.getInstance();
+        mUser=mAuth.getCurrentUser();
+        uid=mUser.getUid();
+
+        databaseReference.child(uid).child("Trip History").child(id).removeValue();
         Log.i("zzzz", "removeItem: " + id);
-        databaseReference.child(id).removeValue();
+        // databaseReference.child(id).removeValue();
         historyLists.remove(adapterPosition);
         notifyItemRemoved(adapterPosition);
         notifyItemRangeChanged(adapterPosition, historyLists.size());

@@ -11,6 +11,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.android.plannertracker.LoginActivity;
 import com.example.android.plannertracker.MainActivity;
 import com.example.android.plannertracker.R;
 
@@ -38,14 +39,14 @@ public class Splash extends AppCompatActivity {
         textView.startAnimation(myanim);
         imageView2.startAnimation(myanim);
 
-       final Intent i = new Intent(this, MainActivity.class);
+       final Intent i = new Intent(this, LoginActivity.class);
         Thread timer = new Thread()
         {
             public  void run()
             {
                 try
                 {
-                    sleep(3000);
+                    sleep(1500);
                 }
                 catch (InterruptedException e)
                 {

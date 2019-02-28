@@ -35,7 +35,10 @@
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/beginUpdate"
                 android:layout_marginLeft="10dp"
-                android:hint="TripName" />
+                android:hint="TripName"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                />
 
             <EditText
                 android:id="@+id/beginUpdate"
@@ -44,7 +47,9 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:hint="Start"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                />
 
             <EditText
                 android:id="@+id/destinationUpdate"
@@ -54,7 +59,9 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:hint="End"
-                android:textColor="@color/black" />
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                />
         </LinearLayout>
     </android.support.v7.widget.CardView>
 
@@ -71,7 +78,11 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="@string/dateBtn"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:background="@drawable/shape"
+            android:textColor="@color/white"
+
+            />
 
         <TextView
             android:id="@+id/dateTextUpdate"
@@ -97,7 +108,10 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="@string/timeBtn"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:background="@drawable/shape"
+            android:textColor="@color/white"
+            />
 
         <TextView
             android:id="@+id/timeTextUpdate"
@@ -155,6 +169,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:text="Update"
-        android:textAllCaps="false" />
+        android:textAllCaps="false"
+        android:background="@drawable/shape"
+        android:textColor="@color/white"
+        />
 
 </LinearLayout>

@@ -12,7 +12,9 @@
         android:roundIcon="@drawable/travel"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".TripDetails.StaticMap"></activity>
+        <activity android:name=".TripDetails.SignUpActivity"></activity>
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".TripDetails.StaticMap" />
         <activity android:name=".TripDetails.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,7 +35,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main2"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
         <activity android:name=".TripDetails.EditActtivity" />
         <activity
             android:name=".TripDetails.DetailActivity"
@@ -45,14 +47,14 @@
 
         <activity
             android:name=".BroadCastRecievers.AlarmDialog"
-            android:theme="@style/Theme.AppCompat.Light.Dialog.Alert"
-            android:launchMode="singleInstance"
             android:excludeFromRecents="true"
-            android:taskAffinity=""/>
+            android:launchMode="singleInstance"
+            android:taskAffinity=""
+            android:theme="@style/Theme.AppCompat.Light.Dialog.Alert" />
         <activity
             android:name=".TripDetails.AddNote"
-            android:theme="@style/Theme.AppCompat.Dialog"
-            android:label="@string/addNote" />
+            android:label="@string/addNote"
+            android:theme="@style/Theme.AppCompat.Dialog" />
     </application>
 
 </manifest>

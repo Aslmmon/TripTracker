@@ -48,11 +48,11 @@ public class AlarmDialog extends AppCompatActivity {
     }
 
     private void showAlarmDialog() {
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME , 0);
-        String tripName = settings.getString("tripName","No trip");
+
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Reminder To your Trip")
-                .setMessage("Your Trip is : " + tripName)
+                .setMessage("Check out your trip")
                 .setPositiveButton("Ok Start", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {

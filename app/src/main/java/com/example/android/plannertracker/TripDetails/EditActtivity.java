@@ -1,10 +1,12 @@
 package com.example.android.plannertracker.TripDetails;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -21,6 +23,7 @@ import android.widget.Toast;
 
 import com.example.android.plannertracker.BroadCastRecievers.AlarmReciever;
 import com.example.android.plannertracker.BroadCastRecievers.NotificationReciever;
+import com.example.android.plannertracker.NewPlan;
 import com.example.android.plannertracker.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -44,7 +47,9 @@ public class EditActtivity extends AppCompatActivity {
     DatePickerDialog datePickerDialog;
     TrackerInformation trackerInformation;
     String tripNameChosen, startLocation, endLocation, dateChosen, timeChosen, IDTaken, TripType;
-
+    private static final String token = "sk.eyJ1IjoibWlsa3lyYW5nZXIiLCJhIjoiY2pzOTBzOXlxMTZ6ZDN6czhiNTJjY2JrdCJ9.TVE3NN-juPXRMYr14hRBFA";
+    public static final String PREFS_NAME = "MyPrefsFile";
+    String start , destination;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,8 +80,76 @@ public class EditActtivity extends AppCompatActivity {
         });
 
 
+        startPosition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showStartPlaces();
+            }
+        });
+        endPosition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showEndPlaces();
+            }
+        });
+
 
     }
+
+    public void showStartPlaces() {
+        Intent intent = new PlaceAutocomplete.IntentBuilder()
+                .accessToken(token)
+                .placeOptions(PlaceOptions.builder().build(PlaceOptions.MODE_CARDS))
+                .build(EditActtivity.this);
+        startActivityForResult(intent, 1);
+
+
+    }
+
+
+    public void showEndPlaces() {
+        Intent intent = new PlaceAutocomplete.IntentBuilder()
+                .accessToken(token)
+                .placeOptions(PlaceOptions.builder().build(PlaceOptions.MODE_CARDS))
+                .build(EditActtivity.this);
+        startActivityForResult(intent, 2);
+
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK && requestCode == 1) {
+            CarmenFeature feature = PlaceAutocomplete.getPlace(data);
+            Toast.makeText(this, feature.text(), Toast.LENGTH_LONG).show();
+            start = feature.text();
+            startPosition.setText(start);
+            // adding shared pref
+            SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+            String startP = feature.text();
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString("start", startP);
+            editor.commit();
+
+
+        } else if (resultCode == Activity.RESULT_OK && requestCode == 2) {
+            CarmenFeature feature = PlaceAutocomplete.getPlace(data);
+            Toast.makeText(this, feature.text(), Toast.LENGTH_LONG).show();
+            destination = feature.text();
+            endPosition.setText(destination);
+            // adding shared pref
+            SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+            String endP = feature.text();
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString("end", endP);
+            editor.commit();
+
+
+        }
+    }
+
+
 
     private void getExtras() {
         tripNameChosen = getIntent().getStringExtra("tripName");
@@ -169,6 +242,7 @@ public class EditActtivity extends AppCompatActivity {
                 dateText.setText(day + "/" + (month + 1) + "/" + year);
             }
         }, mYear, mMonth, mDay);
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
         datePickerDialog.show();
     }
 
