@@ -1,9 +1,10 @@
 package com.example.android.plannertracker;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,114 +17,57 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.example.android.plannertracker.TripDetails.ArrayAdapter;
+import com.example.android.plannertracker.TripDetails.History;
 import com.example.android.plannertracker.TripDetails.NoteClass;
 import com.example.android.plannertracker.TripDetails.TrackerInformation;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     public static final String TRIP_DATA = "Trip Data";
     String id;
+     Context context;
 
-
-    DatabaseReference databaseReference, dataBaseNote;
+    DatabaseReference databaseReference;
     RecyclerView recyclerView;
     TrackerInformation trackerInformation;
     NoteClass noteClass;
     ArrayList<TrackerInformation> trackerInformationList;
     boolean flagRound;
-    List<String> notesList;
-
-    FirebaseDatabase database;
+    FirebaseUser fu;
     FirebaseAuth mAuth;
-    FirebaseAuth.AuthStateListener mAuthListner;
-    FirebaseUser mUser;
+    String userId;
+
 
 
     @Override
     protected void onStart() {
         super.onStart();
-        dataBaseNote = FirebaseDatabase.getInstance().getReference("Trip Data");
-      //  databaseReference = FirebaseDatabase.getInstance().getReference("Trip Data");
-        mAuth = FirebaseAuth.getInstance();
-        mUser = mAuth.getCurrentUser();
-
-
-
-        database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReference("users");
-        //dataBaseNote.keepSynced(true);
+        databaseReference = FirebaseDatabase.getInstance().getReference("users");
         databaseReference.keepSynced(true);
 
-
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.child(userId).child("Trip Data").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.i("trace", dataSnapshot.getKey());
                 trackerInformationList.clear();
                 for (DataSnapshot trackInfo : dataSnapshot.getChildren()) {
-                    TrackerInformation values = trackInfo.getValue(TrackerInformation.class);
-                    trackerInformation = new TrackerInformation();
-                    String nameOfTrip = values.getTripName();
-                    String start = values.getStartPosition();
-                    String end = values.getDestination();
-                    String date = values.getDate();
-                    String time = values.getTime();
-                    String tripType = values.getTripType();
-                //    String notes = values.getTripNotes().getMyNotes();
-                    id = values.getId();
-                    trackerInformation.setTripName(nameOfTrip);
-                    trackerInformation.setStartPosition(start);
-                    trackerInformation.setDestination(end);
-                    trackerInformation.setDate(date);
-                    trackerInformation.setTime(time);
-                    trackerInformation.setId(id);
-                    trackerInformation.setTripType(tripType);
-
-                    dataBaseNote.child(id).child("note").addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            for (DataSnapshot noteSnapshot : dataSnapshot.getChildren()) {
-                                NoteClass noteValues = noteSnapshot.getValue(NoteClass.class);
-                                noteClass = new NoteClass();
-                                String noteAdded = noteValues.getMyNotes();
-                                String id = noteValues.getId();
-                                noteClass.setId(id);
-                                noteClass.setMyNotes(noteAdded);
-                                Log.i("trace", noteAdded);
-                                Log.i("trace", id);
-                                trackerInformation.setTripNotes(noteClass);
-                                trackerInformationList.add(trackerInformation);
-//                                String notes = noteSnapshot.getKey();
-//                                Log.i("trace", (noteSnapshot.getKey()));
-//                                Log.i("trace", notes);
-//                                Log.i("trace", ""+noteSnapshot.getValue());
-//       //                         String notesValue = noteSnapshot.getValue();
-//                                notesList.add(notes);
-//                                trackerInformation.setTripNotes(notesList);
-//                                trackerInformationList.add(trackerInformation);
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
+                    getTrackDetails(trackInfo);
                     trackerInformationList.add(trackerInformation);
-
                 }
                 recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
                 recyclerView.setAdapter(new ArrayAdapter(MainActivity.this, trackerInformationList));
@@ -137,11 +81,36 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+
+    private void getTrackDetails(DataSnapshot trackInfo) {
+        TrackerInformation values = trackInfo.getValue(TrackerInformation.class);
+        trackerInformation = new TrackerInformation();
+        String nameOfTrip = values.getTripName();
+        String start = values.getStartPosition();
+        String end = values.getDestination();
+        String date = values.getDate();
+        String time = values.getTime();
+        String tripType = values.getTripType();
+        id = values.getId();
+        trackerInformation.setTripName(nameOfTrip);
+        trackerInformation.setStartPosition(start);
+        trackerInformation.setDestination(end);
+        trackerInformation.setDate(date);
+        trackerInformation.setTime(time);
+        trackerInformation.setId(id);
+        trackerInformation.setTripType(tripType);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
-        intialize();
+        databaseReference = FirebaseDatabase.getInstance().getReference("users");
+        mAuth = FirebaseAuth.getInstance();
+        fu=mAuth.getCurrentUser();
+        userId=fu.getUid();
+
+         intialize();
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         androidStaff(toolbar);
@@ -150,20 +119,36 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, NewPlan.class));
+
+
+                Log.i("user id", userId);
+               // startActivity(new Intent(MainActivity.this, NewPlan.class));
+                Intent intent = new Intent(MainActivity.this, NewPlan.class);
+                intent.putExtra("SEND_ID", userId);
+                startActivity(intent);
+
             }
         });
-
-
     }
 
     private void intialize() {
-        notesList = new ArrayList<>();
+       // String id= createAnewUser();
+
         recyclerView = findViewById(R.id.recycler);
         trackerInformationList = new ArrayList<>();
+
+
+
+
+       /* databaseReference = FirebaseDatabase.getInstance().getReference("users");
+        mAuth = FirebaseAuth.getInstance();
+        fu=mAuth.getCurrentUser();*/
+
+
     }
 
-    private void androidStaff(Toolbar toolbar) {
+    private void androidStaff(Toolbar toolbar)
+    {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -175,7 +160,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed()
+    {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -190,13 +176,17 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.history) {
+        if (id == R.id.history)
+        {
+            startActivity(new Intent(MainActivity.this, History.class));
 
-
-        } else if (id == R.id.logOut) {
 
         }
-        else  if(id==R.id.profile_image){
+        else if (id == R.id.logOut) {
+            signOut();
+            Intent intent=new Intent(this,LoginActivity.class);
+            startActivity(intent);
+
 
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -204,49 +194,10 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void checkAnewUser(String id, final String email, String password) {
 
-
-        databaseReference.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded( DataSnapshot dataSnapshot,  String s) {
-                //  User u= dataSnapshot.getValue(User.class);
-                User u=new User();
-
-
-
-                String userEmail=u.getUserEmail();
-                if(userEmail==email){
-                    Toast.makeText(MainActivity.this, userEmail, Toast.LENGTH_SHORT).show();
-                }
-
-
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+    private void signOut() {
+        mAuth.signOut();
 
     }
-
-
-
 
 }

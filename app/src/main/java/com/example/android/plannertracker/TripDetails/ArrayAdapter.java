@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +20,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.plannertracker.R;
+import com.example.android.plannertracker.User;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -34,7 +38,16 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
     private List<String> notes;
     NoteClass noteClass;
     TrackerInformation trackerInformation;
-    DatabaseReference databaseReference;
+
+
+
+    DatabaseReference databaseReference,databaseReferenceTwo;
+    FirebaseAuth mAuth;
+    FirebaseUser mUser;
+    SharedPreferences sharedPreferences;
+
+
+    String uid;
 
     public ArrayAdapter(Context context, ArrayList<TrackerInformation> trackerInformations) {
         this.context = context;
@@ -77,6 +90,29 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
 
             }
         });
+
+    }
+
+    public void saveToFinishedDatabase(int position) {
+       String id = databaseReferenceTwo.push().getKey();
+        databaseReference = FirebaseDatabase.getInstance().getReference("users");
+        mAuth = FirebaseAuth.getInstance();
+        mUser=mAuth.getCurrentUser();
+         uid=mUser.getUid();
+
+       // Log.v("xxxx",id);
+
+        HistoryList historyList = new HistoryList(trackerInformations.get(position).getTripName(), trackerInformations.get(position).getStartPosition(), trackerInformations.get(position).getDestination(), id);
+        databaseReferenceTwo.child(uid).child("Trip History").child(id).setValue(historyList);
+    }
+
+    public void moveToHistory(int position) {
+
+        HistoryList historyList = new HistoryList(trackerInformations.get(position).getTripName(), trackerInformations.get(position).getStartPosition(), trackerInformations.get(position).getDestination(), trackerInformations.get(position).getId());
+        Toast.makeText(context, trackerInformations.get(position).getStartPosition(), Toast.LENGTH_SHORT).show();
+
+
+
     }
 
 
@@ -134,6 +170,24 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
         context.startActivity(goToEdit);
     }
 
+
+    private void showDialogForHistory(final int adapterpostion) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                databaseReferenceTwo = FirebaseDatabase.getInstance().getReference("users");
+                saveToFinishedDatabase(adapterpostion);
+                removeItem(adapterpostion);
+            }
+        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Toast.makeText(context, "cancel", Toast.LENGTH_SHORT).show();
+            }
+        }).setTitle("Finished Trip").setMessage("Have you finished this trip ? ").create().show();
+    }
+
     private void showDialog(final int adapterpostion) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
@@ -172,6 +226,13 @@ public class ArrayAdapter extends RecyclerView.Adapter<ArrayAdapter.MyViewHolder
         //  String id = trackerInformation.getId();
         Log.i("trace", "removeItem: " + id);
         databaseReference.child(id).removeValue();
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("users");
+
+        Log.i("magdy", "removeItem: " + id);
+        databaseReference.child(uid).child(id).removeValue();
+        Log.v("omar",id);
+        Log.v("omar2",uid);
         trackerInformations.remove(adapterPosition);
         notifyItemRemoved(adapterPosition);
         notifyItemRangeChanged(adapterPosition, trackerInformations.size());

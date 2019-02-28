@@ -3,11 +3,10 @@
     package="com.example.android.plannertracker">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_PROFILE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
 
     <application
         android:name=".DatabasePersistence.EasyTracker"
@@ -17,6 +16,17 @@
         android:roundIcon="@drawable/travel"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".TripDetails.StaticMap"></activity>
+        <activity android:name=".TripDetails.Splash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".TripDetails.HistoryRecyclerAdapter" />
+        <activity android:name=".TripDetails.History" />
         <activity android:name=".NewPlan" />
 
         <service
@@ -39,21 +49,16 @@
 
         <activity
             android:name=".BroadCastRecievers.AlarmDialog"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:taskAffinity=""
+            android:theme="@style/Theme.AppCompat.Light.Dialog.Alert" />
         <activity
             android:name=".TripDetails.AddNote"
             android:label="@string/addNote"
             android:theme="@style/Theme.AppCompat.Dialog" />
-        <activity android:name=".LoginActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".LoginActivity" />
         <activity android:name=".SignUpActivity" />
-        <activity android:name=".ProfileActivity"></activity>
     </application>
 
 </manifest>
